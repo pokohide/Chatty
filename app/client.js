@@ -22,4 +22,33 @@ $(function () {
   ws.onclose = function close() {
     console.log('disconnected');
   };
+
+
+  var wsUri = "ws://localhost:9999/echo";
+  var output;
+
+  function init() {
+    output = document.getElementById('messages');
+    testWebSocket();
+  }
+
+  function testWebSocket() {
+    ws = new WebSocket(wsUri);
+    ws.onopen = function(e) {
+      console.log('opened');
+    }
+    ws.onclode = function(e) {
+      console.log('closed');
+    }
+    ws.onmessage = function(e) {
+      console.log('aaa');
+    }
+    ws.onerror = function(e) {
+      console.log('error');
+    }
+    window.addEventListener("load", init, false);
+
+  }
+
 });
+
