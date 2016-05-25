@@ -42,19 +42,20 @@ $(function() {
       $dimmed.fadeOut()
       $('.mainArea__handle').fadeOut()
       $('.mainArea__form--input').focus()
-      socket.emit('user join', handle)
       const index = Math.floor( Math.random() * COLORS.length )
       handleColor = COLORS[index]
+      socket.emit('user join', {
+        handle: handle,
+        handleColor: handleColor
+      })
     }
   }
 
   // メッセージをタイムラインに追加
   function addMessageToTimeline($msg, options) {
-    console.log(1)
     if(!options) options = {}
     if(typeof options.fade == 'undefined') options.fade = true
     if(typeof options.prepend == 'undefined') options.prepend = true
-    console.log(2)
     if(options.fade) {
       $msg.hide().fadeIn(FADE_TIME)
     }
@@ -63,7 +64,6 @@ $(function() {
     } else {
       $timeline.append($msg)
     }
-    console.log(3)
     //$timeline[0].scrollTop = $timeline[0].scrollHeight
   }
 
@@ -101,13 +101,13 @@ $(function() {
 
   // roomメッセージ追加
   function roomMessage(message, options) {
-    const $msg = $('<li>').addClass('roomMessage').text(message)
+    const $msg = $('<li>').addClass('roomMessage').html(message)
     addMessageToTimeline($msg, options)
   }
 
   // botメッセージ追加
   function botMessage(message, options) {
-    const $msg = $('<li>').addClass('botMessage').text(message)
+    const $msg = $('<li>').addClass('botMessage').html(message)
     addMessageToTimeline($msg, options)
   }
 
@@ -141,9 +141,8 @@ $(function() {
 
   // ログイン
   socket.on('joined', function(data) {
-    console.log('joined')
     connected = true
-    const message = 'Chattyへようこそ'
+    const message = 'Chattyへようこそ, ' + data.handle + 'さん。'
     roomMessage(message, {prepend: true})
     addMembersMessage(data);
   })
@@ -155,7 +154,8 @@ $(function() {
 
   // ユーザ参加通知
   socket.on('user joined', function(data) {
-    roomMessage(data.handle + 'が参加しました。')
+    const message = "<span style='color:" + data.handleColor + "'>" + data.handle + '</span>が参加しました。'
+    roomMessage(message)
     addMembersMessage(data)
   })
 

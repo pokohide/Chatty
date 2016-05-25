@@ -11,9 +11,11 @@ const app = koa();
 let port = process.env.PORT || 8080;
 
 // ユーザページ
-const users = {}
-const userCount = 0
-const joined = false
+var handle
+var handleColor
+var users = {}
+var userCount = 0
+var joined = false
 
 // static file serve
 app.use(serve(__dirname + '/'));
@@ -45,17 +47,19 @@ app.use(serve(__dirname + '/'));
 
 
 // ユーザの参加を検知
-app.io.route('user join', function* (next, handle) {
-  this.handle = handle
+app.io.route('user join', function* (next, data) {
+  handle = data.handle
+  handleColor = data.handleColor
   users[handle] = handle
-  console.log(users)
-  this.userCount++
-  this.joined = true
+  userCount++
+  joined = true
   this.emit('joined', {
+    handle: handle,
     userCount: userCount
   })
   this.broadcast.emit('user joined', {
     handle: handle,
+    handleColor: handleColor,
     userCount: userCount
   })
 })
