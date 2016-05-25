@@ -1,16 +1,75 @@
 <!doctype html>
 <html>
   <head>
-    <title>Bot Chat</title>
+    <title>Iassist</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
+    <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.6/cosmo/bootstrap.min.css" rel="stylesheet" integrity="sha384-OiWEn8WwtH+084y4yW2YhhH6z/qTSecHZuk/eiWtnvLtU+Z8lpDsmhOKkex6YARr" crossorigin="anonymous">
     <link rel="stylesheet" href="index.css"></link>
   </head>
   <body>
-    <ul id="messages"></ul>
-    <form action="">
-      <input id="m" autocomplete="off"/><button type="submit">Send</button>
-    </form>
-    <script type="text/javascript" charset="UTF-8" src="./socket.io.js"></script>
+    <header>
+      <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Iassist</a>
+          </div>
+          <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+              <li class="active"><a href="#">Home</a></li>
+              <li><a href="#about">About</a></li>
+              <li><a href="#contact">Contact</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </header>
+
+    <div class="main">
+
+      <div class="main-area">
+        <div class="timeline-area">
+          <ul id="timeline">
+          </ul>
+        </div>
+
+        <div class="users-area">
+          <ul id="users">
+
+          </ul>
+        </div>
+      </div>
+
+      <div class="message-form">
+        <div class="form-horizontal">
+        <div class="input-group">
+          <input id="m" autocomplete="off" class="form-control">
+          <span class="input-group-btn">
+            <button type="submit" class="btn btn-default" id="send">Send</button>
+          </span>
+        </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- footer -->
+    <footer class="footer">
+      <div class="container">
+        <p class="text-muted text-center">by Pokohide</p>
+      </div>
+    </footer>
+
+
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
     <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
-    <script src="./client.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <script src="client.js"></script>
   </body>
 </html>

@@ -1,6 +1,6 @@
 'use srtict';
 
-const koa = require('koa')
+const koa = require('koa.io')
 const _ = require('koa-route');
 const views = require('co-views');
 const serve = require('koa-static');
@@ -8,7 +8,7 @@ const moment = require('moment');
 const fs = require('fs');
 const app = koa();
 
-let port = 8080;
+let port = process.env.PORT || 8080;
 
 // ユーザページ
 const usernames = {};
@@ -18,8 +18,75 @@ const userCount = 0;
 app.use(serve(__dirname + '/'));
 
 
+// middleware for connect and disconnect
+app.io.use(function* userLeft(next) {
+  // on connect
+  console.log('somebody connected');
+  console.log(this.headers)
+  yield* next;
+  // on disconnect
+  if (this.addedUser) {
+    delete usernames[this.username];
+    userCount -= 1;
+
+    // echo globally that this client has left
+    this.broadcast.emit('user left', {
+      username: this.username,
+      userCount: userCount
+    });
+  }
+});
+
+
+/**
+ * router for socket event
+ */
+
+app.io.route('add user', function* (next, username) {
+  // we store the username in the socket session for this client
+  this.username = username;
+  // add the client's username to the global list
+  usernames[username] = username;
+  userCount += 1;
+  this.addedUser = true;
+  this.emit('login', {
+    userCount: userCount
+  });
+
+  // echo globally (all clients) that a person has connected
+  this.broadcast.emit('user joined', {
+    username: this.username,
+    userCount: userCoun
+  });
+});
+
+// when the client emits 'new message', this listens and executes
+app.io.route('new message', function* (next, message) {
+  // we tell the client to execute 'new message'
+  this.broadcast.emit('new message', {
+    username: this.username,
+    message: message
+  });
+});
+
+// when the client emits 'typing', we broadcast it to others
+app.io.route('typing', function* () {
+  console.log('%s is typing', this.username);
+  this.broadcast.emit('typing', {
+    username: this.username
+  });
+});
+
+// when the client emits 'stop typing', we broadcast it to others
+app.io.route('stop typing', function* () {
+  console.log('%s is stop typing', this.username);
+  this.broadcast.emit('stop typing', {
+    username: this.username
+  });
+});
+
 // ルート
-app.use(_.get('/', room));
+//app.use(_.get('/', room));
 // app.use(_.get('/user_join', user_join));
 // app.use(_.get('/user_left', user_left));
 // app.use(_.get('/chat/:message', chat));
@@ -28,17 +95,29 @@ app.use(_.get('/', room));
 
 
 /* ソケット定義 */
-const server = require('http').Server(app.callback())
-const io = require('socket.io').listen(server);
+//const server = require('http').Server(app.callback())
+//const io = require('ws').Server({server: server});
+//const io = require('socket.io').listen(server);
 
-io.sockets.on('connection', function(socket) {
-  socket.on('message', function(message) {
-    io.sockets.emit('new message', {
-        message: message,
-        posted_at: moment().format('YYYY/MM/DD HH:mm:ss')
-    })
-  });
-});
+// io.sockets.on('connection', function(socket) {
+//   socket.on('message', function(message) {
+//     io.sockets.emit('new message', {
+//         message: message,
+//         posted_at: moment().format('YYYY/MM/DD HH:mm:ss')
+//     })
+//   });
+// });
+
+// io.on('connection', function(ws) {
+//   console.log('connected');
+//   ws.on('close', function() {
+//     console.log('close');
+//   });
+//   ws.on('message', function(message) {
+//     console.log('message:', message);
+//   })
+
+// });
 
 // サーバー起動
 app.listen(port, function() {
