@@ -12,7 +12,8 @@ html, body {
   height: 100%; 
   margin: 0;
   padding: 0;
-  font-family: 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ ProN W3', sans-seri
+  font-family: 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ ProN W3', sans-seri;
+  font-family: 'HelveticaNeue-Light', 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
 }
 
 .header nav {
@@ -66,10 +67,24 @@ html, body {
   left: 0;
   height: 100%;
   width: 80%;
-  padding: 0;
+  padding: 20px;
   margin: 0;
+  overflow: auto;
   border-right: 5px solid #333;
   background: #ecf0f1;
+}
+
+.timeline__list {
+  list-style: none;
+}
+
+.timeline__list li.roomMessage {
+  text-align: center;
+  color: gray;
+}
+
+.timeline__list li.botMessage {
+  
 }
 
 .mainArea__top--users {
