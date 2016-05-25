@@ -1,54 +1,123 @@
 'use strict';
 
-var ws = new WebSocket('ws://localhost:3000/');
+(function ($, _, io) {
+  var socket = io.connect('http://localhost:3000')
+    , templates = {
+      row: _.template('<div class="row"><div class="col-md-8"><%- message %></div><div class="col-md-4"><%- posted_at %></div></div>')
+    }
+    , is_connected = false
+    , $label_online = null
+    , $label_offline = null
+    , $form = null
+    , $input = null
+    , $rows = null;
 
-$(function () {
-  $('form').submit(function(){
-    var $this = $(this);
-    // ws.onopen = function() {
-    //   console.log('sent message: %s', $('#m').val());
-    // };
-    ws.send($('#m').val());
-    $('#m').val('');
-    return false;
+  //DOMの取得とか
+  $(function () {
+    $label_online = $('#label-online');
+    $label_offline = $('#label-offline');
+    $form = $('#form');
+    $input = $('#input');
+    $rows = $('#messages');
+
+    $form.on('submit', form_submitted);
+
+    change_status();
   });
-  ws.onmessage = function(msg){
-    var returnObject = JSON.parse(msg.data);
-    $('#messages').append($('<li>')).append($('<span id="clientId">').text(returnObject.id)).append($('<span id="clientMessage">').text(returnObject.data));
+
+  //接続状態のステータスラベルのオンライン・オフラインを切り替える
+  var change_status = function () {
+    if ($label_online && $label_offline) {
+      if (is_connected) {
+        $label_online.show();
+        $label_offline.hide();
+      } else {
+        $label_online.hide();
+        $label_offline.show();
+      }
+    }
   };
-  ws.onerror = function(err){
-    console.log("err", err);
+
+  //メッセージの送信
+  var form_submitted = function (event) {
+    event.preventDefault();
+    socket.emit('message', $input.val());
+    $input.val('');
   };
-  ws.onclose = function close() {
-    console.log('disconnected');
-  };
+
+  //socket.io接続時
+  socket.on('connect', function () {
+    is_connected = true;
+    change_status();
+  });
+
+  //socket.io切断時
+  socket.on('disconnect', function () {
+    is_connected = false;
+    change_status();
+  });
+
+  //新しいメッセージ受信時
+  socket.on('new message', function (data) {
+    $rows.append(templates.row({message: data.message, posted_at: data.posted_at}));
+  });
 
 
-  var wsUri = "ws://localhost:9999/echo";
-  var output;
+})(jQuery, _, io);
 
-  function init() {
-    output = document.getElementById('messages');
-    testWebSocket();
-  }
 
-  function testWebSocket() {
-    ws = new WebSocket(wsUri);
-    ws.onopen = function(e) {
-      console.log('opened');
-    }
-    ws.onclode = function(e) {
-      console.log('closed');
-    }
-    ws.onmessage = function(e) {
-      console.log('aaa');
-    }
-    ws.onerror = function(e) {
-      console.log('error');
-    }
-    window.addEventListener("load", init, false);
+// 'use strict';
 
-  }
+// var ws = new WebSocket('ws://localhost:3000/');
 
-});
+// $(function () {
+//   $('form').submit(function(){
+//     var $this = $(this);
+//     // ws.onopen = function() {
+//     //   console.log('sent message: %s', $('#m').val());
+//     // };
+//     ws.send($('#m').val());
+//     $('#m').val('');
+//     return false;
+//   });
+//   ws.onmessage = function(msg){
+//     var returnObject = JSON.parse(msg.data);
+//     $('#messages').append($('<li>')).append($('<span id="clientId">').text(returnObject.id)).append($('<span id="clientMessage">').text(returnObject.data));
+//   };
+//   ws.onerror = function(err){
+//     console.log("err", err);
+//   };
+//   ws.onclose = function close() {
+//     console.log('disconnected');
+//   };
+
+
+//   var wsUri = "ws://localhost:9999/echo";
+//   var output;
+
+//   function init() {
+//     output = document.getElementById('messages');
+//     testWebSocket();
+//   }
+
+//   function testWebSocket() {
+//     ws = new WebSocket(wsUri);
+//     ws.onopen = function(e) {
+//       console.log('opened');
+//     }
+//     ws.onclode = function(e) {
+//       console.log('closed');
+//     }
+//     ws.onmessage = function(e) {
+//       console.log('aaa');
+//     }
+//     ws.onerror = function(e) {
+//       console.log('error');
+//     }
+//     window.addEventListener("load", init, false);
+
+//   }
+// });
+
+
 
