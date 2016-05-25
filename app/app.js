@@ -43,6 +43,7 @@ app.io.use(function* userLeft(next) {
  */
 
 app.io.route('add user', function* (next, username) {
+    console.log('1111111111111')
   // we store the username in the socket session for this client
   this.username = username;
   // add the client's username to the global list
