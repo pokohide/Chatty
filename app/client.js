@@ -12,7 +12,7 @@ $(function() {
 
   const $timeline = $('.timeline__list')
   const $chatInput = $('.mainArea__form--input')
-  const handle, handleColor
+  var handle, handleColor
 
   var connected = false
 
@@ -35,42 +35,36 @@ $(function() {
   })
 
 
-  // Chattyの人数を表示
-  function addMembersMessage(data) {
-    const message = ''
-    if( Number(data.userCount) == 1) {
-      message += 'このチャットルームの参加者は一人です。'
-    } else {
-      message += 'このチャットルームの参加者は' + data.userCount + '人です。'
-    }
-    roomMessage(message)
-  }
-
   // ハンドルネームを設定
   function setHandle() {
     handle = $('.mainArea__handle--input').val()
     if(handle) {
       $dimmed.fadeOut()
       $('.mainArea__handle').fadeOut()
-      $chatForm.focus()
-      socket.emit('add user', handle)
-
+      $('.mainArea__form--input').focus()
+      socket.emit('user join', handle)
       const index = Math.floor( Math.random() * COLORS.length )
       handleColor = COLORS[index]
     }
   }
 
-  // メッセージを送る
-  function sendMessage() {
-    const message = $chatInput.val()
-    if( message && connected ) {
-      $chatInput.val('')
-      addChatMessage({
-        handle: handle,
-        message: message
-      })
-      socket.emit('new message', message)
+  // メッセージをタイムラインに追加
+  function addMessageToTimeline($msg, options) {
+    console.log(1)
+    if(!options) options = {}
+    if(typeof options.fade == 'undefined') options.fade = true
+    if(typeof options.prepend == 'undefined') options.prepend = true
+    console.log(2)
+    if(options.fade) {
+      $msg.hide().fadeIn(FADE_TIME)
     }
+    if(options.prepend) {
+      $timeline.prepend($msg)
+    } else {
+      $timeline.append($msg)
+    }
+    console.log(3)
+    //$timeline[0].scrollTop = $timeline[0].scrollHeight
   }
 
   // ユーザのメッセージを表示
@@ -92,6 +86,19 @@ $(function() {
     addMessageToTimeline($msgDiv, options)
   }
 
+  // メッセージを送る
+  function sendMessage() {
+    const message = $chatInput.val()
+    if( message && connected ) {
+      $chatInput.val('')
+      addChatMessage({
+        handle: handle,
+        message: message
+      })
+      socket.emit('new message', message)
+    }
+  }
+
   // roomメッセージ追加
   function roomMessage(message, options) {
     const $msg = $('<li>').addClass('roomMessage').text(message)
@@ -104,23 +111,10 @@ $(function() {
     addMessageToTimeline($msg, options)
   }
 
-  // メッセージをタイムラインに追加
-  function addMessageToTimeline(msg, options) {
-    $msg = $(msg)
-
-    if(!options) options = {}
-    if(typeof options.fade == 'undefined') options.fade = true
-    if(typeof options.prepend == 'undefined') options.prepend = true
-
-    if(options.fade) {
-      $msg.hide().fadeIn(FADE_TIME)
-    }
-    if(options.prepend) {
-      $timeline.prepend($msg)
-    } else {
-      $timeline.append($msg)
-    }
-    $timeline[0].scrollTop = $timeline[0].scrollHeight
+  // Chattyの人数を表示
+  function addMembersMessage(data) {
+    const message = 'このチャットルームの参加者は' + data.userCount + '人です。'
+    roomMessage(message)
   }
 
 
@@ -146,10 +140,11 @@ $(function() {
 
 
   // ログイン
-  socket.on('connected', function(data) {
+  socket.on('joined', function(data) {
+    console.log('joined')
     connected = true
     const message = 'Chattyへようこそ'
-    log(message, {prepend: true})
+    roomMessage(message, {prepend: true})
     addMembersMessage(data);
   })
 

@@ -11,55 +11,55 @@ const app = koa();
 let port = process.env.PORT || 8080;
 
 // ユーザページ
-const usernames = {};
-const userCount = 0;
+const users = {}
+const userCount = 0
+const joined = false
 
 // static file serve
 app.use(serve(__dirname + '/'));
 
 
 // middleware for connect and disconnect
-app.io.use(function* userLeft(next) {
-  // on connect
-  console.log('somebody connected');
-  console.log(this.headers)
-  yield* next;
-  // on disconnect
-  if (this.addedUser) {
-    delete usernames[this.username];
-    userCount -= 1;
+// app.io.use(function* userLeft(next) {
+//   // on connect
+//   console.log('somebody connected');
+//   console.log(this.headers)
+//   yield* next;
+//   // on disconnect
+//   if (this.addedUser) {
+//     delete usernames[this.username];
+//     userCount -= 1;
 
-    // echo globally that this client has left
-    this.broadcast.emit('user left', {
-      username: this.username,
-      userCount: userCount
-    });
-  }
-});
+//     // echo globally that this client has left
+//     this.broadcast.emit('user left', {
+//       username: this.username,
+//       userCount: userCount
+//     });
+//   }
+// });
 
 
 /**
  * router for socket event
  */
 
-app.io.route('add user', function* (next, username) {
-    console.log('1111111111111')
-  // we store the username in the socket session for this client
-  this.username = username;
-  // add the client's username to the global list
-  usernames[username] = username;
-  userCount += 1;
-  this.addedUser = true;
-  this.emit('login', {
-    userCount: userCount
-  });
 
-  // echo globally (all clients) that a person has connected
+// ユーザの参加を検知
+app.io.route('user join', function* (next, handle) {
+  this.handle = handle
+  users[handle] = handle
+  console.log(users)
+  this.userCount++
+  this.joined = true
+  this.emit('joined', {
+    userCount: userCount
+  })
   this.broadcast.emit('user joined', {
-    username: this.username,
-    userCount: userCoun
-  });
-});
+    handle: handle,
+    userCount: userCount
+  })
+})
+
 
 // when the client emits 'new message', this listens and executes
 app.io.route('new message', function* (next, message) {
