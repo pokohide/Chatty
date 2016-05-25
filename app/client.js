@@ -11,6 +11,7 @@ $(function() {
   ]
 
   const $timeline = $('.timeline__list')
+  const $users = $('.users__list')
   const $chatInput = $('.mainArea__form--input')
   var handle, handleColor
 
@@ -111,9 +112,12 @@ $(function() {
     addMessageToTimeline($msg, options)
   }
 
-  // Chattyの人数を表示
+  // Chattyの人数を表示/リストに追加
   function addMembersMessage(data) {
     const message = 'このチャットルームの参加者は' + data.userCount + '人です。'
+    const $user = $('<li class="users__list--item">')
+      .html('<span style="color:' + data.handleColor + '">' + data.handle + '</span>')
+    $users.append($user)
     roomMessage(message)
   }
 
@@ -154,7 +158,7 @@ $(function() {
 
   // ユーザ参加通知
   socket.on('user joined', function(data) {
-    const message = "<span style='color:" + data.handleColor + "'>" + data.handle + '</span>が参加しました。'
+    const message = '<span style="color:' + data.handleColor + '">' + data.handle + '</span>が参加しました。'
     roomMessage(message)
     addMembersMessage(data)
   })

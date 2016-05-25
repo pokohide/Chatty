@@ -12,6 +12,7 @@ html, body {
   height: 100%; 
   margin: 0;
   padding: 0;
+  font-family: 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ ProN W3', sans-seri
 }
 
 .header nav {
@@ -79,7 +80,11 @@ html, body {
   padding: 0;
   margin: 0;
   border-left: 2px solid #ccc;
-  background: #95a5a6;
+}
+
+.users__list {
+  padding-left: 30px;
+  font-size: 20px;
 }
 
 .mainArea__bottom {

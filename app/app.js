@@ -55,6 +55,7 @@ app.io.route('user join', function* (next, data) {
   joined = true
   this.emit('joined', {
     handle: handle,
+    handleColor: handleColor,
     userCount: userCount
   })
   this.broadcast.emit('user joined', {
