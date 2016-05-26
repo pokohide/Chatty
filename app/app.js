@@ -55,11 +55,13 @@ app.io.route('user join', function* (next, data) {
 })
 
 // when the client emits 'new message', this listens and executes
-app.io.route('new message', function* (next, message) {
+app.io.route('new message', function* (next, data) {
   // we tell the client to execute 'new message'
+  console.log(data)
   this.broadcast.emit('new message', {
-    username: this.username,
-    message: message
+    handle: data.handle,
+    handleColor: users[data.handle].handleColor,
+    message: data.message
   });
 });
 

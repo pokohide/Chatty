@@ -16,8 +16,14 @@ html, body {
   font-family: 'HelveticaNeue-Light', 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
 }
 
-.header nav {
+header nav {
   padding: 0 30px;
+}
+
+header .your--handle {
+  font-size: 18px;
+  background: #212121;
+  font-weight: bold;
 }
 
 .mainArea {
@@ -76,6 +82,20 @@ html, body {
 
 .timeline__list {
   list-style: none;
+}
+
+.timeline__list li {
+  padding: 5px;
+  font-size: 18px;
+}
+
+.timeline__item--handle {
+  width: 150px;
+  float: left;
+}
+
+.timline__item--message {
+  width: 100%;
 }
 
 .timeline__list li.roomMessage {

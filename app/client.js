@@ -29,8 +29,8 @@ $(function() {
   })
 
   // チャットする
-  $('.mainArea__handle--submit').on('click', function(e) {
-
+  $('.mainArea__form--submit').on('click', function(e) {
+    sendMessage()
     e.preventDefault()
   })
 
@@ -54,8 +54,8 @@ $(function() {
   // メッセージをタイムラインに追加
   function addMessageToTimeline($msg, options) {
     if(!options) options = {}
-    if(typeof options.fade == 'undefined') options.fade = true
-    if(typeof options.prepend == 'undefined') options.prepend = true
+    if(typeof options.fade != 'undefined') options.fade = true
+    if(typeof options.prepend != 'undefined') options.prepend = true
     if(options.fade) {
       $msg.hide().fadeIn(FADE_TIME)
     }
@@ -75,27 +75,33 @@ $(function() {
     //     options.fade = false;
     //     $typingMessages.remove();
     //   }
-    const $handleDiv = $('<span class="timeline__item--handle" />').text(data.handle).css('color', handleColor)
-    const $msgBodyDiv = $('<span class="timeline__item--message" />').text(data.message)
+    const $handleDiv = $('<dt class="timeline__item--handle" />').text(data.handle).css('color', data.handleColor)
+    const $msgBodyDiv = $('<dd class="timeline__item--message" />').text(data.message)
 
     //const typingClass = data.typing ? 'typing' : ''
     const $msgDiv = $('<li class="timeline__list--item" />')
       .data('handle', data.handle)
       //.addClass(typingClass)
-      .append($handleDiv, $msgBodyDiv)
+      .append( $('<dl />').append($handleDiv, $msgBodyDiv) )
     addMessageToTimeline($msgDiv, options)
   }
 
   // メッセージを送る
   function sendMessage() {
-    const message = $chatInput.val()
+    var  message = $chatInput.val()
+    message = $('.mainArea__form--input').val()
     if( message && connected ) {
       $chatInput.val('')
+      // 自分のタイムラインにメッセージを表示
       addChatMessage({
+        handle: handle,
+        handleColor: handleColor,
+        message: message
+      })
+      socket.emit('new message', {
         handle: handle,
         message: message
       })
-      socket.emit('new message', message)
     }
   }
 
@@ -164,6 +170,9 @@ $(function() {
   socket.on('joined', function(data) {
     connected = true
     const message = 'Chattyへようこそ, ' + data.handle + 'さん。'
+    const $you = $('<li />')
+      .html('<a class="#"><span style="color:' + data.handleColor + '">' + data.handle + '</span></a>')
+    $('.your--handle').append($you)
     initUserList(data.users)
     roomMessage(message, {prepend: true})
     addMembersMessage(data);
@@ -179,6 +188,7 @@ $(function() {
 
   // ユーザ離席通知
   socket.on('user left', function(data) {
+    alert('ok')
     const message = '<span style="color:' + data.handleColor + '">' + data.handle + '</span>が離席しました。'
     removeUserList(data.handle)
     roomMessage(message)
@@ -188,6 +198,7 @@ $(function() {
 
   // 新しいメッセージ
   socket.on('new message', function(data) {
+    console.log(data)
     addChatMessage(data)
   })
 
