@@ -11,10 +11,9 @@ $(function() {
   ]
 
   const $timeline = $('.timeline__list')
-  const $users = $('.users__list')
+  const $users = $('.user__list')
   const $chatInput = $('.mainArea__form--input')
   var handle, handleColor
-
   var connected = false
 
   var lastTypingTime;
@@ -112,13 +111,31 @@ $(function() {
     addMessageToTimeline($msg, options)
   }
 
+
+
   // Chattyの人数を表示/リストに追加
   function addMembersMessage(data) {
-    const message = 'このチャットルームの参加者は' + data.userCount + '人です。'
-    const $user = $('<li class="users__list--item">')
-      .html('<span style="color:' + data.handleColor + '">' + data.handle + '</span>')
-    $users.append($user)
+    const message = 'このチャットルームの参加者は現在' + data.userCount + '人です。'
     roomMessage(message)
+  }
+
+  /* ルーム参加者 */
+
+  // ルーム参加者を初期設定
+  function initUserList(users) {
+    for(var key in users) {
+      addUserList(users[key].handle, users[key].handleColor)
+    }
+  }
+  // ルーム参加者を追加する
+  function addUserList(handle, handleColor) {
+    const $user = $('<li class="user__list--item">').data('handle', handle)
+      .html('<span style="color:' + handleColor + '">' + handle + '</span>')
+    $users.append($user)
+  }
+  // ルーム参加者から減らす
+  function removeUserList(handle) {
+    $('.users__list--item[data-handle="' + handle + '"]').fadeOut()
   }
 
 
@@ -147,27 +164,31 @@ $(function() {
   socket.on('joined', function(data) {
     connected = true
     const message = 'Chattyへようこそ, ' + data.handle + 'さん。'
+    initUserList(data.users)
     roomMessage(message, {prepend: true})
     addMembersMessage(data);
-  })
-
-  // 新しいメッセージ
-  socket.on('new message', function(data) {
-    addChatMessage(data)
   })
 
   // ユーザ参加通知
   socket.on('user joined', function(data) {
     const message = '<span style="color:' + data.handleColor + '">' + data.handle + '</span>が参加しました。'
+    addUserList(data.handle, data.handleColor)
     roomMessage(message)
     addMembersMessage(data)
   })
 
   // ユーザ離席通知
   socket.on('user left', function(data) {
-    roomMessage(data.handle + 'が離席しました。')
+    const message = '<span style="color:' + data.handleColor + '">' + data.handle + '</span>が離席しました。'
+    removeUserList(data.handle)
+    roomMessage(message)
     addMembersMessage(data)
     // removeChatTyping(data)
+  })
+
+  // 新しいメッセージ
+  socket.on('new message', function(data) {
+    addChatMessage(data)
   })
 
   socket.on('typing', function(data) {
