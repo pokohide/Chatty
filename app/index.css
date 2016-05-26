@@ -85,8 +85,12 @@ header .your--handle {
 }
 
 .timeline__list li {
-  padding: 5px;
+  padding: 0px;
   font-size: 18px;
+}
+
+.timeline__list li dl {
+  margin: 0;
 }
 
 .timeline__item--handle {

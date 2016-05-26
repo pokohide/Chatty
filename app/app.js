@@ -23,7 +23,7 @@ app.io.route(function* connection(next) {
   // 繋がった処理
   yield* next
   // 途切れた処理
-  if(!this.joined) {
+  if(this.joined) {
     delete users[handle]
     userCount -= 1
     this.broadcast.emit('user left', {
