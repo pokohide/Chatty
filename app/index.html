@@ -1,91 +1,15 @@
 <!doctype html>
 <html>
   <head>
-    <title>Iassist</title>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
-    <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.6/cosmo/bootstrap.min.css" rel="stylesheet" integrity="sha384-OiWEn8WwtH+084y4yW2YhhH6z/qTSecHZuk/eiWtnvLtU+Z8lpDsmhOKkex6YARr" crossorigin="anonymous">
+    <title>Socket.IO chat</title>
     <link rel="stylesheet" href="index.css"></link>
   </head>
   <body>
-
-    <div class="mainArea__dimmed"></div>
-
-    <header>
-      <nav class="navbar navbar-default navbar-fixed-top">
-        <div class="container">
-          <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-              <span class="sr-only">Toggle navigation</span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="#">Chatty</a>
-          </div>
-          <div id="navbar" class="collapse navbar-collapse">
-            <ul class="nav navbar-nav">
-              <li class="active"><a href="#">Home</a></li>
-              <li><a href="#about">About</a></li>
-              <li><a href="#contact">Contact</a></li>
-            </ul>
-          </div><!--/.nav-collapse -->
-        </div>
-      </nav>
-    </header>
-
-    <div class="mainArea">
-
-      <div class="panel panel-default mainArea__handle">
-        <div class="panel-heading">
-          <h3 class="panel-title">ハンドルネームを入力してください</h3>
-        </div>
-        <div class="panel-body">
-          <div class="form-group">
-            <div class="input-group">
-              <input class="form-control mainArea__handle--input" type="text" placeholder="ハンドルネーム...">
-              <span class="input-group-btn">
-                <button class="btn btn-default mainArea__handle--submit" type="button">参加する</button>
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="mainArea__top">
-        <div class="mainArea__top--timeline">
-          <ul class="timeline__list">
-          </ul>
-        </div>
-        <div class="mainArea__top--users">
-          <ul class="users__list">
-          </ul>
-        </div>
-      </div>
-
-      <div class="mainArea__bottom">
-        <div class="mainArea__bottom--form">
-          <div class="form-horizontal">
-            <div class="input-group">
-              <input class='form-control mainArea__form--input' autocomplete="off" class="form-control">
-              <span class="input-group-btn">
-                <button type="submit" class="btn btn-default mainArea__form--submit" id="send">Send</button>
-              </span>
-            </div>
-          </div>
-        </div>
-        <!-- footer -->
-        <footer class="footer">
-          <p class="text-muted text-center">by Pokohide</p>
-        </footer>
-      </div>
-
-    </div>
-
-
-    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <ul id="messages"></ul>
+    <form action="">
+      <input id="m" autocomplete="off"/><button type="submit">Send</button>
+    </form>
     <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
     <script src="client.js"></script>
   </body>
 </html>
