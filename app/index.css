@@ -73,9 +73,10 @@ header .your--handle {
   left: 0;
   height: 100%;
   width: 80%;
+  max-width: 80%;
   padding: 20px;
   margin: 0;
-  overflow: auto;
+  overflow-y: auto;
   border-right: 5px solid #333;
   background: #ecf0f1;
 }
@@ -87,6 +88,8 @@ header .your--handle {
 .timeline__list li {
   padding: 0px;
   font-size: 18px;
+  width: 100%;
+  word-wrap: break-word;
 }
 
 .timeline__list li dl {
@@ -94,12 +97,23 @@ header .your--handle {
 }
 
 .timeline__item--handle {
-  width: 150px;
   float: left;
+  clear: left;
+  width: 150px;
+  width: 15%;
+  left: 0;
+  height: auto;
 }
 
-.timline__item--message {
-  width: 100%;
+.timeline__item--message {
+  float: left;
+  width: 85%;
+  height: auto;
+}
+
+.timeline__item--message img{
+  padding: 10px;
+  border-radius: 3px;
 }
 
 .timeline__list li.roomMessage {

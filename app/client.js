@@ -51,6 +51,30 @@ $(function() {
     }
   }
 
+  // メッセージを送る
+  function sendMessage() {
+    var  message = $chatInput.val()
+    message = $('.mainArea__form--input').val()
+    if( message && connected ) {
+      $chatInput.val('')
+      // 自分のタイムラインにメッセージを表示
+      addChatMessage({
+        handle: handle,
+        handleColor: handleColor,
+        message: message
+      })
+      socket.emit('new message', {
+        handle: handle,
+        message: message
+      })
+    }
+  }
+
+
+  /////////////////////////////////////////////
+  //*********  メッセージを表示 ***************//
+  /////////////////////////////////////////////
+
   // メッセージをタイムラインに追加
   function addMessageToTimeline($msg, options) {
     if(!options) options = {}
@@ -86,24 +110,6 @@ $(function() {
     addMessageToTimeline($msgDiv, options)
   }
 
-  // メッセージを送る
-  function sendMessage() {
-    var  message = $chatInput.val()
-    message = $('.mainArea__form--input').val()
-    if( message && connected ) {
-      $chatInput.val('')
-      // 自分のタイムラインにメッセージを表示
-      addChatMessage({
-        handle: handle,
-        handleColor: handleColor,
-        message: message
-      })
-      socket.emit('new message', {
-        handle: handle,
-        message: message
-      })
-    }
-  }
 
   // roomメッセージ追加
   function roomMessage(message, options) {
@@ -112,12 +118,10 @@ $(function() {
   }
 
   // botメッセージ追加
-  function botMessage(message, options) {
-    const $msg = $('<li>').addClass('botMessage').html(message)
+  function botMessage($div, options) {
+    const $msg = $('<li>').addClass('botMessage').append($div)
     addMessageToTimeline($msg, options)
   }
-
-
 
   // Chattyの人数を表示/リストに追加
   function addMembersMessage(data) {
@@ -125,7 +129,11 @@ $(function() {
     roomMessage(message)
   }
 
-  /* ルーム参加者 */
+
+
+  /////////////////////////////////////////////
+  //*************  ルーム参加者 ***************//
+  /////////////////////////////////////////////
 
   // ルーム参加者を初期設定
   function initUserList(users) {
@@ -188,8 +196,8 @@ $(function() {
 
   // ユーザ離席通知
   socket.on('user left', function(data) {
-    alert('ok')
     const message = '<span style="color:' + data.handleColor + '">' + data.handle + '</span>が離席しました。'
+    console.log(message)
     removeUserList(data.handle)
     roomMessage(message)
     addMembersMessage(data)
@@ -201,6 +209,24 @@ $(function() {
     console.log(data)
     addChatMessage(data)
   })
+
+  // ボットからの返信
+  socket.on('bot reply', function(data) {
+    console.log('bot reply')
+    var message = ''
+    if(data.data) {
+      message += '<p>' + data.data + '</p>'
+    }
+    if(data.image) {
+      message += '<img src="' + data.image + '">'
+    }
+    const $handleDiv = $('<dt class="timeline__item--handle" />').text(data.botName)
+    const $msgBodyDiv = $('<dd class="timeline__item--message" />').html(message)
+    const $msgDiv = $('<li class="timeline__list--item" />')
+      .append( $('<dl />').append($handleDiv, $msgBodyDiv) )
+    botMessage($msgDiv)
+  })
+
 
   socket.on('typing', function(data) {
     console.log('now typing')
