@@ -38,6 +38,7 @@
     "koa-route": "^2.4.2",
     "koa-static": "^2.0.0",
     "koa.io": "0.0.3",
+    "marked": "^0.3.5",
     "moment": "^2.13.0",
     "promise": "^7.1.1",
     "socket.io": "^1.4.6",

@@ -1,4 +1,5 @@
 const co = require('co')
+const http = require('http')
 
 
 let COMMANDS = {
@@ -47,6 +48,24 @@ module.exports.youtube = function(data) {
   const match = data.match(regExp)
   const videoId = match[7]
   return '<iframe src="//www.youtube.com/embed/' + videoId + '?controls=0&modestbranding=1" width="560" height="315" frameborder="0" allowfullscreen></iframe>'
+}
+
+module.exports.news = function() {
+  const newsUrl = 'http://news.google.com/news?hl=ja&ned=us&ie=UTF-8&oe=UTF-8&output=rss&topic=po'
+  const url = 'https://ajax.googleapis.com/ajax/services/feed/load?v=1.0&q=' + newsUrl + '&num=5'
+  console.log(url)
+  http.get(url, (res) => {
+  	let body = ''
+  	res.setEncoding('utf8')
+  	res.on('data', (chunk) => {
+  	  body += chunk
+  	})
+  	res.on('end', (res) => {
+  	  return JSON.parse(body)
+  	})
+  }).on('error', (e) => {
+  	return e.message
+  })
 }
 
 

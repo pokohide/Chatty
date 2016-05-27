@@ -173,6 +173,11 @@ function botReply(command) {
     return ['all', { data: message }, 'bot style reply']
   }
 
+  if(com == 'news') {
+    const message = API.news()
+    return ['all', { data: message }, 'bot simple reply']
+  }
+
   if(com == 'setbot') {
 
   }
