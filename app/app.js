@@ -73,9 +73,8 @@ app.io.route('disconnect', function* (next, data) {
   console.log('disconnect')
 })
 
-// when the client emits 'new message', this listens and executes
+// new messageを検知
 app.io.route('new message', function* (next, data) {
-  // we tell the client to execute 'new message'
   console.log(data)
   const _this = this
 
@@ -91,6 +90,12 @@ app.io.route('new message', function* (next, data) {
     _this.emit(type, reply);
   })
 });
+
+// 全体にroom Messageを通知
+app.io.route('room message', function (next, data) {
+  this.broadcast.emit('room message', { data: data.message })
+  //this.emit('room message', { data: data.message })
+})
 
 // when the client emits 'typing', we broadcast it to others
 app.io.route('typing', function* () {
@@ -157,9 +162,14 @@ function botReply(command) {
     return ['me', { data: message }, 'bot style reply']
   }
 
-  if(com == 'settimer') {
+  if(com == 'timer') {
     const message = API.setTimer(data)
-    return ['all', { data: message }, 'bot timer']
+    const count = Number(data)
+    return ['all', { data: message, count: count }, 'bot timer']
+  }
+
+  if(com == 'setbot') {
+
   }
   
   if(com == 'map') {

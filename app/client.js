@@ -57,7 +57,7 @@ $(function() {
 
   // メッセージを送る
   function sendMessage() {
-    var  message = $chatInput.val()
+    var message = $chatInput.val()
     message = $('.mainArea__form--input').val()
     if( message && connected ) {
       $chatInput.val('')
@@ -72,6 +72,13 @@ $(function() {
         message: message
       })
     }
+  }
+
+  // 全体にルームメッセージを送信
+  function sendRoomMessage(message) {
+    socket.emit('room message', {
+      message: message
+    })
   }
 
 
@@ -214,6 +221,11 @@ $(function() {
     addChatMessage(data)
   })
 
+  // ルームメッセージ
+  socket.on('room message', function(data) {
+    roomMessage(data.data)
+  })
+
   // ボットからの返信(シンプルなもの)
   socket.on('bot simple reply', function(data) {
     var message = ''
@@ -248,11 +260,19 @@ $(function() {
     const $msgDiv = $('<li class="timeline__list--item" />')
       .append( $('<dl />').append($handleDiv, $msgBodyDiv) )
     botMessage($msgDiv)
-    $('.timer').startTimer( {
-      onComplete: function(element){
-        element.fadeOut(4000);
+
+    var clock = $('.clock').FlipClock(Number(data.count), {
+      clockFace: 'Counter',
+      autoStart: true,
+      countdown: true,
+      callbacks: {
+        stop: function() {
+          sendRoomMessage('タイマーが終了しました。')
+          $('.clock').remove()
+        }
       }
-    });   
+    })
+    console.log('ok')
   })
 
 

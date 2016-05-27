@@ -3,7 +3,8 @@ const co = require('co')
 
 let COMMANDS = {
   ping: { description: 'return pong', usage: 'bot ping' },
-  map: { description: 'return static image', usage: 'bot map [location]'}
+  map: { description: 'return static image', usage: 'bot map [location]'},
+  timer: { description: 'set timer on this board', usage: 'bot timer [second]'}
 }
 
 module.exports.googleStaticMap = function(center) {
@@ -36,7 +37,7 @@ module.exports.botHelp = function(data) {
 
 module.exports.setTimer = function(data) {
   const second = data || 60
-  var message = '<div class="timer__container"><div class="timer" data-seconds-left=' + second +'></div></div>'
+  var message = '<div class="clock" style="margin:2em;"></div>'
   return message
 }
 
