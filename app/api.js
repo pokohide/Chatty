@@ -4,7 +4,8 @@ const co = require('co')
 let COMMANDS = {
   ping: { description: 'return pong', usage: 'bot ping' },
   map: { description: 'return static image', usage: 'bot map [location]'},
-  timer: { description: 'set timer on this board', usage: 'bot timer [second]'}
+  timer: { description: 'set timer on this board', usage: 'bot timer [second]'},
+  youtube: { description: 'set youtube on this board', usage: 'bot youtube [link]'}
 }
 
 module.exports.googleStaticMap = function(center) {
