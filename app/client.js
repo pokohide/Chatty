@@ -57,10 +57,12 @@ $(function() {
 
   // メッセージを送る
   function sendMessage() {
-    var message = $chatInput.val()
-    message = $('.mainArea__form--input').val()
+    const message = $chatInput.val()
     if( message && connected ) {
-      $chatInput.val('')
+      $chatInput.val('').end()
+      $chatInput.selectionStart = 0
+      $chatInput.selectionEnd = 0
+      $chatInput.focus()
       // 自分のタイムラインにメッセージを表示
       addChatMessage({
         handle: handle,
@@ -176,9 +178,11 @@ $(function() {
     // Enterキーで入力可能に
     if(e.keyCode == 13) {
       if(handleColor) {
-        sendMessage()
-        // socket.emit('stop typing')
-        // typing = false
+        if(e.shiftKey) {
+
+        } else {
+          sendMessage()
+        }
       } else {
         setHandle()
       }

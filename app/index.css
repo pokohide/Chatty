@@ -167,6 +167,15 @@ header .your--handle {
   height: 40px;
 }
 
+.mainArea__form--input {
+  resize: none;
+  font-size: 25px;
+  line-height: 30px;
+  padding: 10px;
+  padding-top: 0px;
+  padding-bottom: 8;
+}
+
 footer {
   height: 30px;
   padding: 8px;
