@@ -48,12 +48,13 @@
         <div class="panel-body">
           <div class="form-group">
             <div class="input-group">
-              <input class="form-control mainArea__handle--input" type="text" placeholder="ハンドルネーム..." autofocus>
+              <input class="form-control mainArea__handle--input" type="text" placeholder="ハンドルネーム..." pattern=".{,10}" autofocus required>
               <span class="input-group-btn">
                 <button class="btn btn-default mainArea__handle--submit" type="button">参加する</button>
               </span>
             </div>
           </div>
+          <p class="help-block text-right" style="margin:0;padding:0;color:#b71c1c">※ 10文字以下</p>
         </div>
       </div>
 

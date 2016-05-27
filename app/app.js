@@ -10,7 +10,6 @@ const fs = require('fs');
 const app = koa();
 
 let API = require('./api.js');
-
 let port = process.env.PORT || 8080;
 
 // ユーザページ
@@ -81,15 +80,16 @@ app.io.route('new message', function* (next, data) {
   const _this = this
 
   analytics(data, function(type, reply) {
-    console.log('type is ' + type)
-    console.log('reply is' + reply)
+    console.log('for user except you, type is ' + type + 'reply is' + reply)
     _this.broadcast.emit(type, reply);
+  }, function(type, reply) {
+    console.log('for you, type is ' + type + 'reply is' + reply)
+    _this.emit(type, reply);
+  }, function(type, reply) {
+    console.log('for all user, type is ' + type + 'reply is' + reply)
+    _this.broadcast.emit(type, reply);
+    _this.emit(type, reply);
   })
-  // this.broadcast.emit('new message', {
-  //   handle: data.handle,
-  //   handleColor: users[data.handle].handleColor,
-  //   message: data.message
-  // });
 });
 
 // when the client emits 'typing', we broadcast it to others
@@ -110,20 +110,30 @@ app.io.route('stop typing', function* () {
 
 
 // メッセージを解析
-function analytics(data, fn) {
+function analytics(data, broadcast, me, all) {
   const h = data.handle
   const m = data.message
-  const command = m.split(' ')
+  const command = m.toLowerCase().split(' ')
 
-  if(command[0] == 'bot' || command[0] == botName) {
-    var reply = botReply(command)
+  if(command[0] == 'bot' || command[0] == botName.toLowerCase()) {
+    const order = botReply(command)
+    const destination = order[0] // 送信先
+    var reply = order[1]
+    const type = order[2] || 'bot simple reply'
     reply['botName'] = (botName == null ? 'bot' : botName + '(bot)')
-    fn('bot reply', reply)
+
+    if(destination == 'broadcast') {
+      broadcast(type, reply)
+    } else if(order[0] == 'me') {
+      me(type, reply)
+    } else if(order[0] == 'all') {
+      all(type, reply)
+    }
     return
   } else {
     // 非同期で学習する
 
-    fn('new message', {
+    broadcast('new message', {
       handle: h,
       handleColor: users[h].handleColor,
       message: m
@@ -133,18 +143,23 @@ function analytics(data, fn) {
 }
 
 function botReply(command) {
-  if(!(command[0] == 'bot' || command[0] == botName)) return {}
+  if(!(command[0] == 'bot' || command[0] == botName.toLowerCase())) return {}
   
   const com = command[1]
   const data = command[2]
   console.log('com is ' + com)
   console.log('data is ' + data)
 
-  if(com == 'ping') return { data: 'pong' }
+  if(com == 'ping') return ['me', { data: 'pong' }]
+
+  if(com == 'help') {
+    const message = API.botHelp(data)
+    return ['me', { data: message }, 'bot style reply']
+  }
   
   if(com == 'map') {
     const staticImage = API.googleStaticMap(data)
-    return { data: data + 'の地図です。',image: staticImage }
+    return ['all', { data: data + 'の地図です。',image: staticImage }]
   }
 
 }

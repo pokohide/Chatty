@@ -99,7 +99,7 @@ header .your--handle {
 .timeline__item--handle {
   float: left;
   clear: left;
-  width: 150px;
+  min-width: 100px;
   width: 15%;
   left: 0;
   height: auto;
@@ -123,6 +123,20 @@ header .your--handle {
 
 .timeline__list li.botMessage {
   
+}
+
+.timeline__list li.botMessage dt {
+  float: left;
+  clear: left;
+  width: 15%;
+  left: 0;
+  height: auto;
+}
+
+.timeline__list li.botMessage dd {
+  float: left;
+  width: 85%;
+  height: auto;
 }
 
 .mainArea__top--users {

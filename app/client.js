@@ -39,6 +39,10 @@ $(function() {
   function setHandle() {
     handle = $('.mainArea__handle--input').val()
     if(handle) {
+      if(handle.length > 10) {
+        alert('ハンドルネームは10文字以下で設定してください')
+        return
+      }
       $dimmed.fadeOut()
       $('.mainArea__handle').fadeOut()
       $('.mainArea__form--input').focus()
@@ -118,8 +122,8 @@ $(function() {
   }
 
   // botメッセージ追加
-  function botMessage($div, options) {
-    const $msg = $('<li>').addClass('botMessage').append($div)
+  function botMessage($msg, options) {
+    $msg.addClass('botMessage')
     addMessageToTimeline($msg, options)
   }
 
@@ -163,7 +167,7 @@ $(function() {
   $(window).on('keydown', function(e) {
     // Enterキーで入力可能に
     if(e.keyCode == 13) {
-      if(handle) {
+      if(handleColor) {
         sendMessage()
         // socket.emit('stop typing')
         // typing = false
@@ -210,9 +214,8 @@ $(function() {
     addChatMessage(data)
   })
 
-  // ボットからの返信
-  socket.on('bot reply', function(data) {
-    console.log('bot reply')
+  // ボットからの返信(シンプルなもの)
+  socket.on('bot simple reply', function(data) {
     var message = ''
     if(data.data) {
       message += '<p>' + data.data + '</p>'
@@ -226,6 +229,18 @@ $(function() {
       .append( $('<dl />').append($handleDiv, $msgBodyDiv) )
     botMessage($msgDiv)
   })
+
+  // ボットからの返信(styleを持ったもの)
+  socket.on('bot style reply', function(data) {
+    const message = data.data
+    const $handleDiv = $('<dt class="timeline__item--handle" />').text(data.botName)
+    const $msgBodyDiv = $('<dd class="timeline__item--message" />').html(message)
+    const $msgDiv = $('<li class="timeline__list--item" />')
+      .append( $('<dl />').append($handleDiv, $msgBodyDiv) )
+    botMessage($msgDiv)
+  })
+
+
 
 
   socket.on('typing', function(data) {
