@@ -41,6 +41,13 @@ module.exports.setTimer = function(data) {
   return message
 }
 
+module.exports.youtube = function(data) {
+  const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/
+  const match = data.match(regExp)
+  const videoId = match[7]
+  return '<iframe src="//www.youtube.com/embed/' + videoId + '?controls=0&modestbranding=1" width="560" height="315" frameborder="0" allowfullscreen></iframe>'
+}
+
 
 
 

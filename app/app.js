@@ -118,9 +118,9 @@ app.io.route('stop typing', function* () {
 function analytics(data, broadcast, me, all) {
   const h = data.handle
   const m = data.message
-  const command = m.toLowerCase().split(' ')
+  const command = m.split(' ')
 
-  if(command[0] == 'bot' || command[0] == botName.toLowerCase()) {
+  if(command[0].toLowerCase() == 'bot' || command[0].toLowerCase() == botName.toLowerCase()) {
     const order = botReply(command)
     const destination = order[0] // 送信先
     var reply = order[1]
@@ -150,7 +150,7 @@ function analytics(data, broadcast, me, all) {
 function botReply(command) {
   if(!(command[0] == 'bot' || command[0] == botName.toLowerCase())) return {}
   
-  const com = command[1]
+  const com = command[1].toLowerCase()
   const data = command[2]
   console.log('com is ' + com)
   console.log('data is ' + data)
@@ -166,6 +166,11 @@ function botReply(command) {
     const message = API.setTimer(data)
     const count = Number(data)
     return ['all', { data: message, count: count }, 'bot timer']
+  }
+
+  if(com == 'youtube') {
+    const message = API.youtube(data)
+    return ['all', { data: message }, 'bot style reply']
   }
 
   if(com == 'setbot') {
