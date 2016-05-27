@@ -156,6 +156,11 @@ function botReply(command) {
     const message = API.botHelp(data)
     return ['me', { data: message }, 'bot style reply']
   }
+
+  if(com == 'settimer') {
+    const message = API.setTimer(data)
+    return ['all', { data: message }, 'bot timer']
+  }
   
   if(com == 'map') {
     const staticImage = API.googleStaticMap(data)

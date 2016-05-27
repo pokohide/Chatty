@@ -125,7 +125,7 @@ header .your--handle {
   
 }
 
-.timeline__list li.botMessage dt {
+.timeline__list li.botMessage dd dt {
   float: left;
   clear: left;
   width: 15%;
@@ -133,7 +133,7 @@ header .your--handle {
   height: auto;
 }
 
-.timeline__list li.botMessage dd {
+.timeline__list li.botMessage dd dt{
   float: left;
   width: 85%;
   height: auto;
@@ -171,3 +171,32 @@ footer {
   height: 30px;
   padding: 8px;
 }
+
+
+
+/* component */
+.timer__container {
+  overflow: auto;
+  width: 150px;
+  font-size: 20px;
+  font-weight: bold;
+  font-family: digital, arial, verdana;
+  padding: 7px;
+  overflow: hidden;
+  display: inline-block;
+  border: 3px solid #222;
+}
+.timer__container .timer > div {
+  float: left;
+}
+.timer__container .timer .hours{
+  width: 50px;
+}
+.timer__container .timer .minutes {
+  width: 50px;
+}
+.timer__contariner .timer .seconds {
+  width: 50px;
+}
+
+

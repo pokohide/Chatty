@@ -29,10 +29,15 @@ module.exports.botHelp = function(data) {
 
   if(COMMANDS[data]) {
   	message += 'Usage:  ' + COMMANDS[data].usage + '<br>'
-  	message += '  ' + data + '    ' + COMMANDS[data].description + '<br>'
+  	message += '<dt>' + data + '</dt><dd>' + COMMANDS[data].description + '</dd>'
   	return message
   }
+}
 
+module.exports.setTimer = function(data) {
+  const second = data || 60
+  var message = '<div class="timer__container"><div class="timer" data-seconds-left=' + second +'></div></div>'
+  return message
 }
 
 
