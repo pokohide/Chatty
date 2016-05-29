@@ -57,7 +57,8 @@ $(function() {
 
   // メッセージを送る
   function sendMessage() {
-    const message = $chatInput.val()
+    const message = $chatInput.val().replace(/^\s*(.*?)\s*$/, "$1") //前後の空白を消去
+    console.log(message)
     if( message && connected ) {
       $chatInput.val('').end()
       $chatInput.selectionStart = 0
@@ -112,7 +113,7 @@ $(function() {
     //     options.fade = false;
     //     $typingMessages.remove();
     //   }
-    const message = marked(data.message)
+    const message = marked(data.message.replace(/[\n\r]/g, '<br />'))
     const $handleDiv = $('<dt class="timeline__item--handle" />').text(data.handle).css('color', data.handleColor)
     const $msgBodyDiv = $('<dd class="timeline__item--message" />').html(message)
 

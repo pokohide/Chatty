@@ -79,13 +79,13 @@ app.io.route('new message', function* (next, data) {
   const _this = this
 
   analytics(data, function(type, reply) {
-    console.log('for user except you, type is ' + type + 'reply is' + reply)
+    console.log('for user except you, type is ' + type + ', reply is' + JSON.stringify(reply))
     _this.broadcast.emit(type, reply);
   }, function(type, reply) {
-    console.log('for you, type is ' + type + 'reply is' + reply)
+    console.log('for you, type is ' + type + ', reply is ' + JSON.stringify(reply))
     _this.emit(type, reply);
   }, function(type, reply) {
-    console.log('for all user, type is ' + type + 'reply is' + reply)
+    console.log('for all user, type is ' + type + ', reply is ' + JSON.stringify(reply))
     _this.broadcast.emit(type, reply);
     _this.emit(type, reply);
   })
@@ -178,8 +178,22 @@ function botReply(command) {
     return ['all', { data: message }, 'bot simple reply']
   }
 
-  if(com == 'setbot') {
-
+  if(com == 'set') {
+    if(!data) {
+      return ['me', { data: 'コマンドが不適切です。bot help参照' }, 'room message']
+    }
+    const regxp = /^(\w+)=(\w+)$/i
+    const config = data.match(regxp)
+    if(config[1] == 'botname') {
+      botName = config[2]
+      const message = 'ボットネームを' + botName + 'に変更しました。'
+      return ['all', { data: message }, 'room message']
+    } else if(config[1] == 'color') {
+      this.handleColor = config[2]
+      users[this.handle] = { handle: this.handle, handleColor: this.handleColor }
+      const message = 'あなたの色を' + config[2] + 'に変更しました。'
+      return ['me', { data: message }, 'room message']
+    }
   }
   
   if(com == 'map') {
@@ -187,5 +201,6 @@ function botReply(command) {
     return ['all', { data: data + 'の地図です。',image: staticImage }]
   }
 
+  return ['me', { data: 'コマンドが不適切です。bot help参照' }, 'room message']
 }
 
