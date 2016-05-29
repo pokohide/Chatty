@@ -192,6 +192,12 @@ $(function() {
     }
   })
 
+  $(window).on('onbeforeunload', function(e) {
+    socket.emit('disconnect', {
+      message: '' 
+    })
+    return 'チャットから離脱しますがよろしいですか。'
+  })
 
   // ログイン
   socket.on('joined', function(data) {

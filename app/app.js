@@ -38,7 +38,7 @@ app.io.route(function* (next) {
   yield* next;
   // 途切れた処理
   console.log('disconnect')
-  if(!this.joined) {
+  if(this.joined) {
     delete users[this.handle]
     userCount -= 1
     this.broadcast.emit('user left', {
@@ -50,7 +50,7 @@ app.io.route(function* (next) {
 })
 
 // ユーザの参加を検知
-app.io.route('user join', function* (next, data) {
+app.io.route('user join', function (next, data) {
   this.handle = data.handle
   this.handleColor = data.handleColor
   users[this.handle] = { handle: this.handle, handleColor: this.handleColor }
@@ -69,12 +69,12 @@ app.io.route('user join', function* (next, data) {
   })
 })
 
-app.io.route('disconnect', function* (next, data) {
+app.io.route('disconnect', function (next, data) {
   console.log('disconnect')
 })
 
 // new messageを検知
-app.io.route('new message', function* (next, data) {
+app.io.route('new message', function (next, data) {
   console.log(data)
   const _this = this
 
@@ -98,7 +98,7 @@ app.io.route('room message', function (next, data) {
 })
 
 // when the client emits 'typing', we broadcast it to others
-app.io.route('typing', function* () {
+app.io.route('typing', function () {
   console.log('%s is typing', this.username);
   this.broadcast.emit('typing', {
     username: this.username
@@ -106,7 +106,7 @@ app.io.route('typing', function* () {
 });
 
 // when the client emits 'stop typing', we broadcast it to others
-app.io.route('stop typing', function* () {
+app.io.route('stop typing', function () {
   console.log('%s is stop typing', this.username);
   this.broadcast.emit('stop typing', {
     username: this.username
