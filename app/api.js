@@ -1,12 +1,14 @@
 const co = require('co')
 const http = require('http')
+const marked = require('marked')
 
 
 let COMMANDS = {
-  ping: { description: 'return pong', usage: 'bot ping' },
-  map: { description: 'return static image', usage: 'bot map [location]'},
-  timer: { description: 'set timer on this board', usage: 'bot timer [second]'},
-  youtube: { description: 'set youtube on this board', usage: 'bot youtube [link]'}
+  ping: { description: 'return pong', usage: ['bot ping'] },
+  map: { description: 'return static image', usage: ['bot map [location]'] },
+  timer: { description: 'embed timer on this board', usage: ['bot timer [second]'] },
+  youtube: { description: 'embed youtube on this board', usage: ['bot youtube [link]'] },
+  set: { description: 'set botname or set your color', usage: ['bot set botname=[botname]', 'bot set color=[#rgb]'] }
 }
 
 module.exports.googleStaticMap = function(center) {
@@ -22,19 +24,24 @@ module.exports.googleStaticMap = function(center) {
 module.exports.botHelp = function(data) {
   var message = '' 
   if(!data || data == '') {
-  	message += '<dl>Usage: bot [command] [arguments]<br>'
+  	message += '<dl>Usage: bot [commands] [arguments]<br>'
+  	message += 'Commands:<br>'
   	for(var key in COMMANDS) {
-  	  message += '<dt>' + key + '</dt><dd>' + COMMANDS[key].description + '</dd>'
+  	  message += '<div style="padding-left:20px"><dt>' + key + '</dt><dd>' + COMMANDS[key].description + '</dd></div>'
   	}
-  	message += "concept guides. See 'bot help [command]'</dl>"
+  	message += "Config into can be viewed via: bot help [commands]</dl>"
   	return message
   }
 
-  if(COMMANDS[data]) {
-  	message += 'Usage:  ' + COMMANDS[data].usage + '<br>'
+  else if(COMMANDS[data]) {
   	message += '<dt>' + data + '</dt><dd>' + COMMANDS[data].description + '</dd>'
+  	message += '<b>Usage:</b><br>'
+  	for(var i=0; i < COMMANDS[data].usage.length; i++) {
+  	  message += marked('* ' + '`' + COMMANDS[data].usage[i] + '`')
+  	}
   	return message
   }
+
 }
 
 module.exports.setTimer = function(data) {

@@ -111,6 +111,10 @@ header .your--handle {
   height: auto;
 }
 
+.timeline__item--message ul {
+  margin-left: 60px;
+}
+
 .timeline__item--message img{
   padding: 10px;
   border-radius: 3px;
