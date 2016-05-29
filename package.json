@@ -11,7 +11,8 @@
   },
   "scripts": {
     "test": "mocha tests --recursive",
-    "start": "node app/app.js"
+    "start": "node app/app.js",
+    "deploy": "gcloud preview app deploy --project chatty-1326"
   },
   "repository": {
     "type": "git",
