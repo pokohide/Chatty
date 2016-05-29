@@ -102,7 +102,9 @@ $(function() {
     } else {
       $timeline.append($msg)
     }
-    //$timeline[0].scrollTop = $timeline[0].scrollHeight
+    $('.mainArea__top--timeline').animate( {
+      scrollTop: $msg.position().top
+    })
   }
 
   // ユーザのメッセージを表示

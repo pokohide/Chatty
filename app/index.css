@@ -85,11 +85,12 @@ header .your--handle {
   list-style: none;
 }
 
-.timeline__list li {
+.timeline__list--item {
   padding: 0px;
   font-size: 18px;
   width: 100%;
   word-wrap: break-word;
+  overflow: hidden;
 }
 
 .timeline__list li dl {
