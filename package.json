@@ -2,12 +2,16 @@
   "name": "sprint2-bot-advanced-challenge",
   "version": "1.0.0",
   "description": "Sprint2 advanced challenge",
-  "main": "index.js",
+  "main": "app/app.js",
   "directories": {
     "test": "tests"
   },
+  "engines": {
+    "node": "6.2.0"
+  },
   "scripts": {
-    "test": "mocha tests --recursive"
+    "test": "mocha tests --recursive",
+    "start": "node app/app.js"
   },
   "repository": {
     "type": "git",
@@ -31,6 +35,7 @@
     "co": "^4.6.0",
     "co-views": "^2.1.0",
     "fs": "0.0.2",
+    "gcloud": "^0.34.0",
     "http": "0.0.0",
     "jade": "^1.11.0",
     "koa": "^1.2.0",
