@@ -43,6 +43,7 @@ $(function() {
         alert('ハンドルネームは10文字以下で設定してください')
         return
       }
+      $('.mainArea__handle--input').val('')
       $dimmed.fadeOut()
       $('.mainArea__handle').fadeOut()
       $('.mainArea__form--input').focus()
@@ -154,26 +155,21 @@ $(function() {
 
   // ルーム参加者を初期設定
   function initUserList(users) {
+    $('.user__list').html('')
     for(var key in users) {
       addUserList(users[key].handle, users[key].handleColor)
     }
   }
   // ルーム参加者を追加する
   function addUserList(handle, handleColor) {
-    const $user = $('<li class="user__list--item">').data('handle', handle)
+    const $user = $('<li class="user__list--item">').attr('data-handle', handle)
       .html('<span style="color:' + handleColor + '">' + handle + '</span>')
     $users.append($user)
   }
   // ルーム参加者から減らす
   function removeUserList(handle) {
-    $('.users__list--item[data-handle="' + handle + '"]').fadeOut()
+    $('.user__list--item[data-handle="' + handle + '"]').fadeOut()
   }
-
-
-  // チャット入力中
-  $chatInput.on('input', function() {
-    // nowTyping()
-  })
 
 
   // キーボード入力検知
@@ -192,9 +188,16 @@ $(function() {
     }
   })
 
+  $('#disconnect').on('click', function(e) {
+    socket.emit('left', {
+      handle: handle 
+    })
+    e.preventDefault()
+  })
+
   $(window).on('onbeforeunload', function(e) {
-    socket.emit('disconnect', {
-      message: '' 
+    socket.emit('left', {
+      handle: handle 
     })
     return 'チャットから離脱しますがよろしいですか。'
   })
@@ -225,8 +228,17 @@ $(function() {
     console.log(message)
     removeUserList(data.handle)
     roomMessage(message)
-    addMembersMessage(data)
-    // removeChatTyping(data)
+  })
+
+  // 自分が離席した
+  socket.on('left', function(data) {
+    handleColor = undefined
+    const message = '<span style="color:' + data.handleColor + '">あなた</span>が離席しました。'
+    removeUserList(data.handle)
+    alert('離席しました。')
+    roomMessage(message)
+    $dimmed.fadeIn()
+    $('.mainArea__handle').fadeIn()
   })
 
   // 新しいメッセージ
@@ -286,78 +298,13 @@ $(function() {
         }
       }
     })
-    console.log('ok')
   })
 
-
-
-
-  socket.on('typing', function(data) {
-    console.log('now typing')
-    // addChatTyping(data)
-  })
-
-  socket.on('stop typing', function(data) {
-    console.log('remove typing')
-    // removeChatTyping(data)
+  // サーバーからの問いかけ。
+  socket.on('connected?', function(data) {
+    if(data) {
+      socket.emit('yeah', { state: data.state, handle: handle })
+    }
   })
 
 });
-
-
-
-  // Adds the visual chat typing message
-  // function addChatTyping (data) {
-  //   data.typing = true;
-  //   data.message = 'is typing';
-  //   addChatMessage(data);
-  // }
-
-  // // Removes the visual chat typing message
-  // function removeChatTyping (data) {
-  //   getTypingMessages(data).fadeOut(function () {
-  //     $(this).remove();
-  //   });
-  // }
-
-  // Adds a message element to the messages and scrolls to the bottom
-  // el - The element to add as a message
-  // options.fade - If the element should fade-in (default = true)
-  // options.prepend - If the element should prepend
-  //   all other messages (default = false)
-
-
-  // // Prevents input from having injected markup
-  // function cleanInput (input) {
-  //   return $('<div/>').text(input).text();
-  // }
-
-  // // Updates the typing event
-  // function updateTyping () {
-  //   if (connected) {
-  //     if (!typing) {
-  //       typing = true;
-  //       socket.emit('typing');
-  //     }
-  //     lastTypingTime = (new Date()).getTime();
-
-  //     setTimeout(function () {
-  //       var typingTimer = (new Date()).getTime();
-  //       var timeDiff = typingTimer - lastTypingTime;
-  //       if (timeDiff >= TYPING_TIMER_LENGTH && typing) {
-  //         socket.emit('stop typing');
-  //         typing = false;
-  //       }
-  //     }, TYPING_TIMER_LENGTH);
-  //   }
-  // }
-
-  // Gets the 'X is typing' messages of a user
-  // function getTypingMessages (data) {
-  //   return $('.typing.message').filter(function (i) {
-  //     return $(this).data('username') === data.username;
-  //   });
-  // }
-
-
-

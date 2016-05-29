@@ -16,6 +16,7 @@ let port = process.env.PORT || 8080;
 var users = {}
 var userCount = 0
 var botName = 'Chatty'
+var connection
 
 // 静的ページ
 app.use(serve(__dirname + '/'));
@@ -38,15 +39,6 @@ app.io.route(function* (next) {
   yield* next;
   // 途切れた処理
   console.log('disconnect')
-  if(this.joined) {
-    delete users[this.handle]
-    userCount -= 1
-    this.broadcast.emit('user left', {
-      handle: this.handle,
-      handleColor: this.handleColor,
-      userCount: userCount
-    })
-  }
 })
 
 // ユーザの参加を検知
@@ -67,10 +59,49 @@ app.io.route('user join', function (next, data) {
     handleColor: this.handleColor,
     userCount: userCount
   })
+
+  const _this = this
+  this.serverState = 0
+  this.serverUsers = this.users
+  // 4秒間に1回クライアントにプッシュ通知。
+  // クライアントは通知を受け取ったらその数字をそのまま返す。
+  // サーバーサイドで受け取った数字が送ったものと一緒なら繋がっているとする。
+  // 4秒間返答がなかったら、接続が切れたとする
+  connection = setInterval(function() {
+    for(var key in _this.serverUsers) {
+      userCount -= 1
+      _this.broadcast.emit('user left', {
+        handle: users[key].handle,
+        handleColor: users[key].handleColor,
+        userCount: userCount
+      })
+      delete users[key]
+    }
+    _this.serverUsers = _this.users
+    _this.serverState += 1
+    _this.emit('connected?', { state: _this.serverState })
+  }, 4000)
+
 })
 
-app.io.route('disconnect', function (next, data) {
-  console.log('disconnect')
+app.io.route('left', function (next, data) {
+  console.log(data)
+  if(this.joined) {
+    userCount -= 1
+    delete users[this.handle]
+    this.broadcast.emit('user left', {
+      handle: this.handle,
+      handleColor: this.handleColor,
+      userCount: userCount
+    })
+    this.emit('left', {
+      handle: this.handle,
+      handleColor: this.handleColor,
+      userCount: userCount
+    })
+    this.joined = false
+    clearInterval(this.connection)
+  }
 })
 
 // new messageを検知
@@ -96,23 +127,6 @@ app.io.route('room message', function (next, data) {
   this.broadcast.emit('room message', { data: data.message })
   //this.emit('room message', { data: data.message })
 })
-
-// when the client emits 'typing', we broadcast it to others
-app.io.route('typing', function () {
-  console.log('%s is typing', this.username);
-  this.broadcast.emit('typing', {
-    username: this.username
-  });
-});
-
-// when the client emits 'stop typing', we broadcast it to others
-app.io.route('stop typing', function () {
-  console.log('%s is stop typing', this.username);
-  this.broadcast.emit('stop typing', {
-    username: this.username
-  });
-});
-
 
 // メッセージを解析
 function analytics(data, broadcast, me, all) {
@@ -204,3 +218,21 @@ function botReply(command) {
   return ['me', { data: 'コマンドが不適切です。bot help参照' }, 'room message']
 }
 
+app.io.route('yeah', function (next, data) {
+  console.log(data.state + ' is ' + this.serverState + '  for ' + data.handle)
+  if(data.state == this.serverState) {
+    delete this.serverUsers[data.handle]
+    console.log(data.handle + ' is connected')
+  } else {
+    if(this.joined) {
+      userCount -= 1
+      delete users[this.handle]
+      this.broadcast.emit('user left', {
+        handle: this.handle,
+        handleColor: this.handleColor,
+        userCount: userCount
+      })
+      this.joined = false
+    }
+  }
+})
