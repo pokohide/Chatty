@@ -2,6 +2,9 @@ const co = require('co')
 const http = require('http')
 const marked = require('marked')
 const mongoose = require('mongoose')
+const MeCab = new require('mecab-async')
+const mecab = new MeCab()
+
 
 const TodoSchema = new mongoose.Schema({
   name: { type: String, required: true },

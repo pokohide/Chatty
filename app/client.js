@@ -130,20 +130,12 @@ $(function() {
 
   // ユーザのメッセージを表示
   function addChatMessage(data, options) {
-    //   var $typingMessages = getTypingMessages(data);
-    //   options = options || {};
-    //   if ($typingMessages.length !== 0) {
-    //     options.fade = false;
-    //     $typingMessages.remove();
-    //   }
     const message = marked( data.message.replace(/[\n\r]/g, '<br />') )
     const $handleDiv = $('<dt class="timeline__item--handle" />').text(data.handle).css('color', data.handleColor)
     const $msgBodyDiv = $('<dd class="timeline__item--message" />').html(message)
 
-    //const typingClass = data.typing ? 'typing' : ''
     const $msgDiv = $('<li class="timeline__list--item" />')
       .data('handle', data.handle)
-      //.addClass(typingClass)
       .append( $('<dl />').append($handleDiv, $msgBodyDiv) )
     addMessageToTimeline($msgDiv, options)
   }
