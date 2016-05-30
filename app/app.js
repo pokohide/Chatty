@@ -17,6 +17,7 @@ var users = {}
 var userCount = 0
 var botName = 'Chatty'
 var connection
+var chatbot = {}
 
 // 静的ページ
 app.use(serve(__dirname + '/'));
@@ -156,6 +157,18 @@ function analytics(data, broadcast, me, all) {
     return
   } else {
     // 非同期で学習する
+    API.analysis(m, function(words) {
+      for(var i=0; i < words.length-1; i++) {
+        const first = words[i].surface
+        const next = words[i+1].surface
+        if( chatbot[first] ) {
+          chatbot[first].push(next)
+        } else {
+          chatbot[first] = [next]
+        }
+      }
+      console.log(chatbot)
+    })
 
     broadcast('new message', {
       handle: h,
@@ -205,6 +218,12 @@ function botReply(command, emit) {
   else if(com == 'news') {
     API.news(data, function(message) {
       emit( ['all', { data: message }, 'bot simple reply'] )
+    })
+  }
+
+  else if(com == 'status') {
+    const message = API.status(botName, chatbot, function(message) {
+      emit( ['me', {data: message }, 'bot simple reply'] )
     })
   }
 

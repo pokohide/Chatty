@@ -1,9 +1,10 @@
 const co = require('co')
 const http = require('http')
+const querystring = require('querystring')
+const parser = require('libxml-to-js')
+const xml2json = require('xml2json')
 const marked = require('marked')
 const mongoose = require('mongoose')
-const MeCab = new require('mecab-async')
-const mecab = new MeCab()
 
 
 const TodoSchema = new mongoose.Schema({
@@ -12,6 +13,14 @@ const TodoSchema = new mongoose.Schema({
   completed: { type: Boolean, default: false }
 })
 const Todo = mongoose.model('Todo', TodoSchema)
+
+
+const MarkovScheme = new mongoose.Schema({
+  start: String,
+  next: [String]
+})
+const Markov = mongoose.model('Markov', MarkovScheme)
+
 
 mongoose.connect(process.env.MONGOLAB_URI, function (error) {
   if (error) console.error(error);
@@ -140,6 +149,46 @@ module.exports.news = function(data, fn) {
   	return e.message
   })
   fn('ok')
+}
+
+module.exports.status = function(name, bot, fn) {
+  const bytes = unescape(encodeURIComponent(JSON.stringify(bot))).length
+  const vocabulary = Object.keys(bot).length
+
+  var message = '僕の名前は' + name + '(o＾ω＾o)<br>みんなの会話を勉強してる！'
+  message += '僕はイマ**' + bytes + '**バイトだよ。<br>'
+  message += 'ちなみに僕のイマの語彙数は**' + vocabulary + '**だよ。<br>'
+  message += '僕と話すには`bot talk [会話内容]`で返事をするよ！じゃあねー'
+
+  fn(marked(message)) 
+}
+
+module.exports.analysis = function(data, fn) {
+  const qst = querystring.stringify({
+    appid: process.env.YAHOO_APPID,
+    sentence: data,
+    results: 'ma'
+  })
+
+  const options = {
+    host: 'jlp.yahooapis.jp',
+    port: 80,
+    path: '/MAService/V1/parse?' + qst
+  };
+
+  http.get(options, function(res) {
+    res.setEncoding('utf8')
+    var result = ''
+    res.on('data', function(chunk) {
+      result += chunk
+    })
+    res.on('end', function() {
+      const json = JSON.parse( xml2json.toJson(result) )
+      const words = json.ResultSet.ma_result.word_list.word
+      fn(words)   
+    })
+
+  })
 }
 
 
