@@ -136,7 +136,7 @@ $(function() {
     //     options.fade = false;
     //     $typingMessages.remove();
     //   }
-    const message = marked(data.message.replace(/[\n\r]/g, '<br />'))
+    const message = marked( data.message.replace(/[\n\r]/g, '<br />') )
     const $handleDiv = $('<dt class="timeline__item--handle" />').text(data.handle).css('color', data.handleColor)
     const $msgBodyDiv = $('<dd class="timeline__item--message" />').html(message)
 
