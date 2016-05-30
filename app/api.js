@@ -1,7 +1,20 @@
 const co = require('co')
 const http = require('http')
 const marked = require('marked')
+const mongoose = require('mongoose')
 
+const TodoSchema = new mongoose.Schema({
+  name: String,
+  body: String,
+  completed: Boolean
+})
+const Todo = mongoose.model('Todo', TodoSchema)
+
+
+mongoose.connect(process.env.MONGOLAB_URI, function (error) {
+  if (error) console.error(error);
+  else console.log('mongo connected');
+});
 
 let COMMANDS = {
   ping: { description: 'return pong', usage: ['bot ping'] },
@@ -9,6 +22,32 @@ let COMMANDS = {
   timer: { description: 'embed timer on this board', usage: ['bot timer [second]'] },
   youtube: { description: 'embed youtube on this board', usage: ['bot youtube [link]'] },
   set: { description: 'set botname or set your color', usage: ['bot set botname=[botname]', 'bot set color=[#rgb]'] }
+}
+
+module.exports.todo = function(command, name, body) {
+  if(command == 'add') {
+    var todo = new Todo(name: name, body: body, completed: false);
+    todo.save(function(err) {
+   	  if(err) { console.log(err) }
+    })
+  } else if(command == 'delete') {
+  	Todo.remove({ name: name }, function(err) {
+  	  console.log(err)
+  	})
+  } else if(command == 'list') {
+  	Todo.find({}, function(err, docs) {
+  	  if(!err) {
+  	  	console.log("num of todo => " + doc.length)
+  	  	for(var i=0; i < docs.length; i++) {
+  	  	  console.log(docs[i])
+  	  	}
+  	  	// mongodbへの接続を切断 mongoose.disconnect
+  	  	// process.exit() // node.js終了
+  	  } else {
+  	  	console.log('find error')
+  	  }
+  	})
+  }
 }
 
 module.exports.googleStaticMap = function(center) {

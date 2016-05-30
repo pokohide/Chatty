@@ -67,20 +67,20 @@ app.io.route('user join', function (next, data) {
   // クライアントは通知を受け取ったらその数字をそのまま返す。
   // サーバーサイドで受け取った数字が送ったものと一緒なら繋がっているとする。
   // 4秒間返答がなかったら、接続が切れたとする
-  connection = setInterval(function() {
-    for(var key in _this.serverUsers) {
-      userCount -= 1
-      _this.broadcast.emit('user left', {
-        handle: users[key].handle,
-        handleColor: users[key].handleColor,
-        userCount: userCount
-      })
-      delete users[key]
-    }
-    _this.serverUsers = _this.users
-    _this.serverState += 1
-    _this.emit('connected?', { state: _this.serverState })
-  }, 4000)
+  // connection = setInterval(function() {
+  //   for(var key in _this.serverUsers) {
+  //     userCount -= 1
+  //     _this.broadcast.emit('user left', {
+  //       handle: users[key].handle,
+  //       handleColor: users[key].handleColor,
+  //       userCount: userCount
+  //     })
+  //     delete users[key]
+  //   }
+  //   _this.serverUsers = _this.users
+  //   _this.serverState += 1
+  //   _this.emit('connected?', { state: _this.serverState })
+  // }, 4000)
 
 })
 
@@ -100,7 +100,6 @@ app.io.route('left', function (next, data) {
       userCount: userCount
     })
     this.joined = false
-    clearInterval(this.connection)
   }
 })
 
