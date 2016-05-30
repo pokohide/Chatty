@@ -176,7 +176,9 @@ function botReply(command) {
   }
 
   if(com == 'todo') {
+    console.log(1)
     const message = API.todo(data, command[3], command.slice(4))
+    console.log(4)
     return ['me', { data: message }, 'bot style reply']
   }
 

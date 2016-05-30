@@ -24,7 +24,7 @@ let COMMANDS = {
   todo: { description: 'you can use todo list', usage: ['bot todo add [todo名] [todo内容]', 'bot todo delete [todo名]', 'bot todo list'] }
 }
 
-module.exports.todo = function(command, name, body) {
+module.exports.todo = function(command, name, body, fn) {
   if(command == 'add') {
     if(name.length==0 || body.length==0) return '<p><code>bot todo add [todo名] [todo内容]</code> の形式で入力してください。</p>'
     var todo = new Todo({ name: name, body: body.join(' ') });
@@ -35,7 +35,7 @@ module.exports.todo = function(command, name, body) {
   }
 
 
-  if(command == 'delete' && name == 'all') {
+  else if(command == 'delete' && name == 'all') {
     Todo.remove({}, function(err) {
       if(err) return '<p>Todoを消去できませんでした。</p>'
     })
@@ -43,27 +43,32 @@ module.exports.todo = function(command, name, body) {
   }
 
 
-  if(command == 'delete') {
+  else if(command == 'delete') {
     if(name.length==0) return '<p><code>bot todo delete [todo名]</code> の形式で入力してください。</p>'
   	Todo.remove({ name: name }, function(err) {
   	  if(err) return '<p>Todoを消去できませんでした。</p>'
   	})
-    return '<p>Todoリストの  Todo名: <b>' + name + '</b>, Todo内容: <b>' + body + '</b> を消去しました。</p>'
+    return '<p>Todoリストの  Todo名: <b>' + name + '</b> を消去しました。</p>'
   }
 
 
-  if(command == 'list') {
+  else if(command == 'list') {
+    console.log(2)
   	Todo.find({}, function(err, docs) {
-      console.log(err)
   	  if(!err) {
         if(docs.length == 0) {
           return '<p>Todoリストは空です。</p>'
         } else {
           var message = ''
           for(var i=0; i < docs.length; i++) {
+            console.log(docs[i].name)
+            console.log(docs[i].body)
             message += '* <b>' + docs[i].name + '</b>:  <b>' + docs[i].body + '</b>'
           }
-          return marked(message)
+          //message = marked(message)
+          console.log(message)
+          console.log(3)
+          return message
         }
   	  } else {
   	  	return '<p>Todoリストを参照できません。</p>'
@@ -71,7 +76,7 @@ module.exports.todo = function(command, name, body) {
   	})
   }
 
-  return '<p><code>bot help todo</code>を参照してください。</p>'
+  else { return '<p><code>bot help todo</code>を参照してください。</p>' }
 }
 
 module.exports.googleStaticMap = function(center) {
