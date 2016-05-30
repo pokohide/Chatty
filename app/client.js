@@ -129,6 +129,17 @@ $(function() {
   }
 
 
+  // flashメッセージ追加
+  function flashMessage(message, type) {
+    var html = '<button type="button" class="close" data-dismiss="alert">&times;</button>'
+    html += message
+    const $msg = $('<div>').addClass('alert alert-dismissible alert-' + type).html(html)
+    $('.mainArea__info').append($msg)
+    setTimeout(function() {
+      $msg.fadeOut(1000)
+    }, 3000)
+  }
+
   // roomメッセージ追加
   function roomMessage(message, options) {
     const $msg = $('<li>').addClass('roomMessage').html(message)
@@ -188,7 +199,7 @@ $(function() {
     }
   })
 
-  $('#disconnect').on('click', function(e) {
+  $('.disconnect').on('click', function(e) {
     socket.emit('left', {
       handle: handle 
     })
@@ -205,38 +216,38 @@ $(function() {
   // ログイン
   socket.on('joined', function(data) {
     connected = true
-    const message = 'Chattyへようこそ, ' + data.handle + 'さん。'
+    const message = '<p>Chattyへようこそ, ' + data.handle + 'さん。</p>'
+    flashMessage(message, 'success')
     const $you = $('<li />')
-      .html('<a class="#"><span style="color:' + data.handleColor + '">' + data.handle + '</span></a>')
+      .html('<a class="#"><span style="color:' + data.handleColor + ';-webkit-text-stroke:1px black;">' + data.handle + '</span></a>')
     $('.your--handle').append($you)
     initUserList(data.users)
-    roomMessage(message, {prepend: true})
     addMembersMessage(data);
   })
 
   // ユーザ参加通知
   socket.on('user joined', function(data) {
-    const message = '<span style="color:' + data.handleColor + '">' + data.handle + '</span>が参加しました。'
+    const message = '<span style="color:' + data.handleColor + '";-webkit-text-stroke:1px black;>' + data.handle + '</span>が参加しました。'
     addUserList(data.handle, data.handleColor)
-    roomMessage(message)
+    flashMessage(message, 'success')
     addMembersMessage(data)
   })
 
   // ユーザ離席通知
   socket.on('user left', function(data) {
-    const message = '<span style="color:' + data.handleColor + '">' + data.handle + '</span>が離席しました。'
+    const message = '<span style="color:' + data.handleColor + '";-webkit-text-stroke:1px black;>' + data.handle + '</span>が離席しました。'
     console.log(message)
     removeUserList(data.handle)
-    roomMessage(message)
+    flashMessage(message, 'warning')
   })
 
   // 自分が離席した
   socket.on('left', function(data) {
     handleColor = undefined
-    const message = '<span style="color:' + data.handleColor + '">あなた</span>が離席しました。'
+    const message = '<span style="color:' + data.handleColor + ';-webkit-text-stroke:1px black;">あなた</span>が離席しました。'
+    $('.your--handle').html('')
     removeUserList(data.handle)
-    alert('離席しました。')
-    roomMessage(message)
+    flashMessage(message, 'success')
     $dimmed.fadeIn()
     $('.mainArea__handle').fadeIn()
   })
@@ -249,7 +260,7 @@ $(function() {
 
   // ルームメッセージ
   socket.on('room message', function(data) {
-    roomMessage(data.data)
+    roomMessage(data.data, 'warning')
   })
 
   // ボットからの返信(シンプルなもの)
@@ -293,7 +304,7 @@ $(function() {
       countdown: true,
       callbacks: {
         stop: function() {
-          sendRoomMessage('タイマーが終了しました。')
+          sendRoomMessage('タイマーが終了しました。', 'danger')
           $('.clock').remove()
         }
       }
