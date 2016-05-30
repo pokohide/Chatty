@@ -4,12 +4,11 @@ const marked = require('marked')
 const mongoose = require('mongoose')
 
 const TodoSchema = new mongoose.Schema({
-  name: String,
-  body: String,
-  completed: Boolean
+  name: { type: String, required: true },
+  body: { type: String, required: true },
+  completed: { type: Boolean, default: false }
 })
 const Todo = mongoose.model('Todo', TodoSchema)
-
 
 mongoose.connect(process.env.MONGOLAB_URI, function (error) {
   if (error) console.error(error);
@@ -21,33 +20,58 @@ let COMMANDS = {
   map: { description: 'return static image', usage: ['bot map [location]'] },
   timer: { description: 'embed timer on this board', usage: ['bot timer [second]'] },
   youtube: { description: 'embed youtube on this board', usage: ['bot youtube [link]'] },
-  set: { description: 'set botname or set your color', usage: ['bot set botname=[botname]', 'bot set color=[#rgb]'] }
+  set: { description: 'set botname or set your color', usage: ['bot set botname=[botname]', 'bot set color=[#rgb]'] },
+  todo: { description: 'you can use todo list', usage: ['bot todo add [todo名] [todo内容]', 'bot todo delete [todo名]', 'bot todo list'] }
 }
 
 module.exports.todo = function(command, name, body) {
   if(command == 'add') {
-    var todo = new Todo(name: name, body: body, completed: false);
+    if(name.length==0 || body.length==0) return '<p><code>bot todo add [todo名] [todo内容]</code> の形式で入力してください。</p>'
+    var todo = new Todo({ name: name, body: body.join(' ') });
     todo.save(function(err) {
-   	  if(err) { console.log(err) }
+   	  if(err) return '<p>Todoを追加できませんでした。</p>'
     })
-  } else if(command == 'delete') {
+    return '<p>Todoリストに  Todo名: <b>' + name + '</b>, Todo内容: <b>' + body + '</b> を追加しました。</p>'
+  }
+
+
+  if(command == 'delete' && name == 'all') {
+    Todo.remove({}, function(err) {
+      if(err) return '<p>Todoを消去できませんでした。</p>'
+    })
+    return '<p>Todoリストを全て消去しました。</p>'
+  }
+
+
+  if(command == 'delete') {
+    if(name.length==0) return '<p><code>bot todo delete [todo名]</code> の形式で入力してください。</p>'
   	Todo.remove({ name: name }, function(err) {
-  	  console.log(err)
+  	  if(err) return '<p>Todoを消去できませんでした。</p>'
   	})
-  } else if(command == 'list') {
+    return '<p>Todoリストの  Todo名: <b>' + name + '</b>, Todo内容: <b>' + body + '</b> を消去しました。</p>'
+  }
+
+
+  if(command == 'list') {
   	Todo.find({}, function(err, docs) {
+      console.log(err)
   	  if(!err) {
-  	  	console.log("num of todo => " + doc.length)
-  	  	for(var i=0; i < docs.length; i++) {
-  	  	  console.log(docs[i])
-  	  	}
-  	  	// mongodbへの接続を切断 mongoose.disconnect
-  	  	// process.exit() // node.js終了
+        if(docs.length == 0) {
+          return '<p>Todoリストは空です。</p>'
+        } else {
+          var message = ''
+          for(var i=0; i < docs.length; i++) {
+            message += '* <b>' + docs[i].name + '</b>:  <b>' + docs[i].body + '</b>'
+          }
+          return marked(message)
+        }
   	  } else {
-  	  	console.log('find error')
+  	  	return '<p>Todoリストを参照できません。</p>'
   	  }
   	})
   }
+
+  return '<p><code>bot help todo</code>を参照してください。</p>'
 }
 
 module.exports.googleStaticMap = function(center) {

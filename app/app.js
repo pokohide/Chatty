@@ -175,6 +175,11 @@ function botReply(command) {
     return ['me', { data: message }, 'bot style reply']
   }
 
+  if(com == 'todo') {
+    const message = API.todo(data, command[3], command.slice(4))
+    return ['me', { data: message }, 'bot style reply']
+  }
+
   if(com == 'timer') {
     const message = API.setTimer(data)
     const count = Number(data)
