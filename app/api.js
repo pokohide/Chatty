@@ -35,7 +35,8 @@ let COMMANDS = {
   youtube: { description: 'embed youtube on this board', usage: ['bot youtube [link]'] },
   set: { description: 'set botname or set your color', usage: ['bot set botname=[botname]', 'bot set color=[#rgb]'] },
   todo: { description: 'you can use todo list', usage: ['bot todo add [todo名] [todo内容]', 'bot todo delete [todo名]', 'bot todo list'] },
-  status: { description: 'show bot status', usage: ['bot status'] }
+  status: { description: 'show bot status', usage: ['bot status'] },
+  talk: { description: 'you can talk with bot', usage: ['bot talk [トーク内容]'] }
 }
 
 module.exports.todo = function(command, name, body, fn) {
