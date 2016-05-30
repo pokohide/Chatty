@@ -215,6 +215,27 @@ function botReply(command, emit) {
     })
   }
 
+  else if(com == 'talk') {
+    // 学習してから返信を考える
+    API.analysis(command.slice(2).join(' '), function(words) {
+      var word = ''
+      for(var i=0; i < words.length-1; i++) {
+        const first = words[i].surface
+        const next = words[i+1].surface
+        if(words[i].pos == '名詞') word = words[i].surface
+        if( chatbot[first] ) {
+          chatbot[first].push(next)
+        } else {
+          chatbot[first] = [next]
+        }
+        if(word.length == 0) word = words[Math.floor(Math.random() * words.length)].surface
+      }
+      API.talk(word, chatbot, function(message) {
+        emit( ['me', { data: message }, 'bot style reply'] )
+      })
+    })
+  }
+
   else if(com == 'news') {
     API.news(data, function(message) {
       emit( ['all', { data: message }, 'bot simple reply'] )

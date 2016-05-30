@@ -5,6 +5,7 @@ const parser = require('libxml-to-js')
 const xml2json = require('xml2json')
 const marked = require('marked')
 const mongoose = require('mongoose')
+const API = require('./api')
 
 
 const TodoSchema = new mongoose.Schema({
@@ -33,7 +34,8 @@ let COMMANDS = {
   timer: { description: 'embed timer on this board', usage: ['bot timer [second]'] },
   youtube: { description: 'embed youtube on this board', usage: ['bot youtube [link]'] },
   set: { description: 'set botname or set your color', usage: ['bot set botname=[botname]', 'bot set color=[#rgb]'] },
-  todo: { description: 'you can use todo list', usage: ['bot todo add [todo名] [todo内容]', 'bot todo delete [todo名]', 'bot todo list'] }
+  todo: { description: 'you can use todo list', usage: ['bot todo add [todo名] [todo内容]', 'bot todo delete [todo名]', 'bot todo list'] },
+  status: { description: 'show bot status', usage: ['bot status'] }
 }
 
 module.exports.todo = function(command, name, body, fn) {
@@ -158,9 +160,23 @@ module.exports.status = function(name, bot, fn) {
   var message = '僕の名前は' + name + '(o＾ω＾o)<br>みんなの会話を勉強してる！'
   message += '僕はイマ**' + bytes + '**バイトだよ。<br>'
   message += 'ちなみに僕のイマの語彙数は**' + vocabulary + '**だよ。<br>'
-  message += '僕と話すには`bot talk [会話内容]`で返事をするよ！じゃあねー'
+  message += '僕と話すには`bot talk [会話内容]`で返事をするよ！'
 
   fn(marked(message)) 
+}
+
+
+module.exports.talk = function(first, bot, fn) {
+  var message = first
+  var count = 0
+  while(bot[first] && count<20) {
+    const arr = bot[first]
+    const next = arr[Math.floor(Math.random() * arr.length)]
+    message += next
+    first = next
+    count += 1
+  }
+  fn(message)
 }
 
 module.exports.analysis = function(data, fn) {
@@ -187,7 +203,6 @@ module.exports.analysis = function(data, fn) {
       const words = json.ResultSet.ma_result.word_list.word
       fn(words)   
     })
-
   })
 }
 
