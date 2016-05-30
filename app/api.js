@@ -58,11 +58,9 @@ module.exports.todo = function(command, name, body, fn) {
         if(docs.length == 0) {
           fn('<p>Todoリストは空です。</p>')
         } else {
-          var message = ''
+          var message = '現在のTodoリスト一覧です。 [Todo名]:  [Todo内容]'
           for(var i=0; i < docs.length; i++) {
-            console.log(docs[i].name)
-            console.log(docs[i].body)
-            message += '* <b>' + docs[i].name + '</b>:  <b>' + docs[i].body + '</b>'
+            message += marked('* <b>' + docs[i].name + '</b>:  <b>' + docs[i].body + '</b>')
           }
           fn(marked(message))
         }

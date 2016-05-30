@@ -183,13 +183,9 @@ function botReply(command, emit) {
   }
 
   else if(com == 'todo') {
-    console.log(1)
     API.todo(data, command[3], command.slice(4), function(message) {
-      console.log(message)
-      console.log(2)
       emit( ['me', { data: message }, 'bot style reply'] )
     })
-    console.log(3)
   }
 
   else if(com == 'timer') {
