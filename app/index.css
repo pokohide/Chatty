@@ -34,6 +34,20 @@ header .your--handle {
   left: 0;
 }
 
+.mainArea__info {
+  position: absolute;
+  top: 90px;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  width: 400px;
+  font-size: 16px;
+}
+.mainArea__info > .alert {
+  width: 100%;
+}
+
 .mainArea__dimmed {
   position: absolute;
   top: 0;
@@ -89,6 +103,7 @@ header .your--handle {
   padding: 0px;
   font-size: 18px;
   width: 100%;
+  margin: 0;
   word-wrap: break-word;
   overflow: hidden;
 }
@@ -152,11 +167,22 @@ header .your--handle {
   padding: 0;
   margin: 0;
   border-left: 2px solid #ccc;
+  overflow-y: auto;
+  position: relative;
 }
 
 .user__list {
   padding-left: 30px;
   font-size: 20px;
+  padding-bottom: 50px;
+}
+
+.user__list--disconnect {
+  position: absolute;
+  bottom: 0px;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
 }
 
 .mainArea__bottom {
