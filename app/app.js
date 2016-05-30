@@ -124,7 +124,13 @@ app.io.route('new message', function (next, data) {
 // 全体にroom Messageを通知
 app.io.route('room message', function (next, data) {
   this.broadcast.emit('room message', { data: data.message })
-  //this.emit('room message', { data: data.message })
+  this.emit('room message', { data: data.message })
+})
+
+// 全体にflash messageを通知
+app.io.route('flash message', function (next, data) {
+  this.broadcast.emit('flash message', { data: data.message })
+  this.emit('flash message', { data: data.message })
 })
 
 // メッセージを解析
@@ -134,19 +140,19 @@ function analytics(data, broadcast, me, all) {
   const command = m.split(' ')
 
   if(command[0].toLowerCase() == 'bot' || command[0].toLowerCase() == botName.toLowerCase()) {
-    const order = botReply(command)
-    const destination = order[0] // 送信先
-    var reply = order[1]
-    const type = order[2] || 'bot simple reply'
-    reply['botName'] = (botName == null ? 'bot' : botName + '(bot)')
-
-    if(destination == 'broadcast') {
-      broadcast(type, reply)
-    } else if(order[0] == 'me') {
-      me(type, reply)
-    } else if(order[0] == 'all') {
-      all(type, reply)
-    }
+    botReply(command, function(order) {
+      const destination = order[0] // 送信先
+      var reply = order[1]
+      const type = order[2] || 'bot simple reply'
+      reply['botName'] = (botName == null ? 'bot' : botName + '(bot)')
+      if(destination == 'broadcast') {
+        broadcast(type, reply)
+      } else if(order[0] == 'me') {
+        me(type, reply)
+      } else if(order[0] == 'all') {
+        all(type, reply)
+      }
+    })
     return
   } else {
     // 非同期で学習する
@@ -160,45 +166,53 @@ function analytics(data, broadcast, me, all) {
   }
 }
 
-function botReply(command) {
-  if(!(command[0] == 'bot' || command[0] == botName.toLowerCase())) return {}
+function botReply(command, emit) {
+  if(!(command[0] == 'bot' || command[0] == botName.toLowerCase())) emit({})
   
   const com = command[1].toLowerCase()
   const data = command[2]
   console.log('com is ' + com)
   console.log('data is ' + data)
 
-  if(com == 'ping') return ['me', { data: 'pong' }]
+  if(com == 'ping') emit( ['me', { data: 'pong' }] )
 
-  if(com == 'help') {
-    const message = API.botHelp(data)
-    return ['me', { data: message }, 'bot style reply']
+  else if(com == 'help') {
+    API.botHelp(data, function(message) {
+      emit( ['me', { data: message }, 'bot style reply'] )
+    })
   }
 
-  if(com == 'todo') {
+  else if(com == 'todo') {
     console.log(1)
-    const message = API.todo(data, command[3], command.slice(4))
-    console.log(4)
-    return ['me', { data: message }, 'bot style reply']
+    API.todo(data, command[3], command.slice(4), function(message) {
+      console.log(message)
+      console.log(2)
+      emit( ['me', { data: message }, 'bot style reply'] )
+    })
+    console.log(3)
   }
 
-  if(com == 'timer') {
-    const message = API.setTimer(data)
+  else if(com == 'timer') {
+    API.setTimer(data, function(message) {
+      const count = Number(data)
+      emit( ['all', { data: message, count: count }, 'bot timer'] )
+    })
     const count = Number(data)
-    return ['all', { data: message, count: count }, 'bot timer']
   }
 
-  if(com == 'youtube') {
-    const message = API.youtube(data)
-    return ['all', { data: message }, 'bot style reply']
+  else if(com == 'youtube') {
+    API.youtube(data, function(message) {
+      emit( ['all', { data: message }, 'bot style reply'] )
+    })
   }
 
-  if(com == 'news') {
-    const message = API.news()
-    return ['all', { data: message }, 'bot simple reply']
+  else if(com == 'news') {
+    API.news(data, function(message) {
+      emit( ['all', { data: message }, 'bot simple reply'] )
+    })
   }
 
-  if(com == 'set') {
+  else if(com == 'set') {
     if(!data) {
       return ['me', { data: 'コマンドが不適切です。bot help参照' }, 'room message']
     }
@@ -207,21 +221,22 @@ function botReply(command) {
     if(config[1] == 'botname') {
       botName = config[2]
       const message = 'ボットネームを' + botName + 'に変更しました。'
-      return ['all', { data: message }, 'room message']
+      emit( ['all', { data: message }, 'room message'] )
     } else if(config[1] == 'color') {
       this.handleColor = config[2]
       users[this.handle] = { handle: this.handle, handleColor: this.handleColor }
       const message = 'あなたの色を' + config[2] + 'に変更しました。'
-      return ['me', { data: message }, 'room message']
+      emit( ['me', { data: message }, 'room message'] )
     }
   }
   
-  if(com == 'map') {
-    const staticImage = API.googleStaticMap(data)
-    return ['all', { data: data + 'の地図です。',image: staticImage }]
+  else if(com == 'map') {
+    API.googleStaticMap(data, function(image) {
+      emit( ['all', { data: data + 'の地図です。',image: image }] )
+    })
   }
 
-  return ['me', { data: 'コマンドが不適切です。bot help参照' }, 'room message']
+  else { emit( ['me', { data: 'コマンドが不適切です。bot help参照' }, 'room message'] ) }
 }
 
 app.io.route('yeah', function (next, data) {
