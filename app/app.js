@@ -124,13 +124,13 @@ app.io.route('new message', function (next, data) {
 // 全体にroom Messageを通知
 app.io.route('room message', function (next, data) {
   this.broadcast.emit('room message', { data: data.message })
-  this.emit('room message', { data: data.message })
+  //this.emit('room message', { data: data.message })
 })
 
 // 全体にflash messageを通知
 app.io.route('flash message', function (next, data) {
   this.broadcast.emit('flash message', { data: data.message })
-  this.emit('flash message', { data: data.message })
+  //this.emit('flash message', { data: data.message })
 })
 
 // メッセージを解析
@@ -193,9 +193,9 @@ function botReply(command, emit) {
   }
 
   else if(com == 'timer') {
-    API.setTimer(data, function(message) {
+    API.setTimer(data, function(message, hash) {
       const count = Number(data)
-      emit( ['all', { data: message, count: count }, 'bot timer'] )
+      emit( ['all', { data: message, count: count, hash: hash }, 'bot timer'] )
     })
     const count = Number(data)
   }

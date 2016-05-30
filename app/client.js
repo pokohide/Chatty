@@ -18,6 +18,7 @@ $(function() {
 
   var lastTypingTime;
   var typing = false
+  var notice_on = false
 
   const socket = io()
   var $dimmed = $('.mainArea__dimmed')
@@ -85,6 +86,12 @@ $(function() {
     })
   }
 
+  function sendFlashMessage(message) {
+    socket.emit('flash message', {
+      message: message
+    })
+  }
+
 
   /////////////////////////////////////////////
   //*********  メッセージを表示 ***************//
@@ -103,9 +110,22 @@ $(function() {
     } else {
       $timeline.append($msg)
     }
-    $('.mainArea__top--timeline').animate( {
-      scrollTop: $msg.position().top
-    })
+
+    if(notice_on) {
+      chatNotice()
+    } else {
+      $('.mainArea__top--timeline').animate( {
+        scrollTop: $('.timeline__list')[0].scrollHeight
+      })
+    }
+  }
+
+  // チャットの通知を下に表示する
+  function chatNotice() {
+    $('.chat_notice').show()
+    setTimeout(function() {
+      $('.chat_notice').hide()
+    }, 1000)
   }
 
   // ユーザのメッセージを表示
@@ -206,6 +226,20 @@ $(function() {
     e.preventDefault()
   })
 
+  $('.notice-on').on('click', function(e) {
+    var $i = $(this).find('i')
+    if($i.hasClass('on')) {
+      $i.removeClass()
+      $i.addClass('glyphicon glyphicon-sort-by-attributes off')
+      notice_on = false
+    } else {
+      $i.removeClass()
+      $i.addClass('glyphicon glyphicon-volume-up on')
+      notice_on = true
+    }
+    e.preventDefault()
+  })
+
   $(window).on('onbeforeunload', function(e) {
     socket.emit('left', {
       handle: handle 
@@ -260,7 +294,12 @@ $(function() {
 
   // ルームメッセージ
   socket.on('room message', function(data) {
-    roomMessage(data.data, 'warning')
+    roomMessage(data.data)
+  })
+
+  // フラッシュメッセージ
+  socket.on('flash message', function(data) {
+    flashMessage(data.data, 'warning')
   })
 
   // ボットからの返信(シンプルなもの)
@@ -291,21 +330,22 @@ $(function() {
 
   // タイマーの設置
   socket.on('bot timer', function(data) {
-    const message = data.data;
+    const message = data.data
+    const hash = data.hash
     const $handleDiv = $('<dt class="timeline__item--handle" />').text(data.botName)
     const $msgBodyDiv = $('<dd class="timeline__item--message" />').html(message)
     const $msgDiv = $('<li class="timeline__list--item" />')
       .append( $('<dl />').append($handleDiv, $msgBodyDiv) )
     botMessage($msgDiv)
 
-    var clock = $('.clock').FlipClock(Number(data.count), {
+    var clock = $('.clock.' + hash).FlipClock(Number(data.count), {
       clockFace: 'Counter',
       autoStart: true,
       countdown: true,
       callbacks: {
         stop: function() {
-          sendRoomMessage('タイマーが終了しました。', 'danger')
-          $('.clock').remove()
+          sendFlashMessage('タイマーが終了しました。', 'danger')
+          $('.clock.' + hash).remove()
         }
       }
     })

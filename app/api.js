@@ -110,8 +110,9 @@ module.exports.botHelp = function(data, fn) {
 
 module.exports.setTimer = function(data, fn) {
   const second = data || 60
-  var message = '<div class="clock" style="margin:2em;"></div>'
-  fn(message)
+  const hash = Math.random().toString(36).slice(-8)
+  var message = '<div class="clock ' + hash + '" style="margin:2em;"></div>'
+  fn(message, hash)
 }
 
 module.exports.youtube = function(data, fn) {

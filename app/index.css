@@ -193,6 +193,24 @@ header .your--handle {
   height: 70px;
 }
 
+.chat_notice {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  display: none;
+}
+
+.notice-on {
+  cursor: pointer;
+}
+
+.notice-on:hover {
+  opacity: 0.7;
+}
+
 .mainArea__bottom--form {
   width: 100%;
   height: 40px;
