@@ -229,9 +229,14 @@ function botReply(command, emit) {
   }
 
   else if(com == 'news') {
-    console.log('ok')
     API.news(data, function(message) {
       emit( ['all', { data: message }, 'bot style reply'] )
+    })
+  }
+
+  else if(com == 'dice') {
+    API.dice(data, function(message) {
+      emit( ['all', { data: message }, 'bot simple reply'] )
     })
   }
 

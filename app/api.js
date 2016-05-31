@@ -182,6 +182,12 @@ module.exports.status = function(name, bot, fn) {
   fn(marked(message)) 
 }
 
+module.exports.dice = function(data, fn) {
+  const max = data || 6
+  const message = 'サイコロを振った結果は' + (Math.floor( Math.random() * max)+1) + 'です。'
+  fn(message)
+}
+
 
 module.exports.talk = function(first, bot, fn) {
   var message = first
