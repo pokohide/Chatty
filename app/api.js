@@ -31,7 +31,8 @@ mongoose.connect(process.env.MONGOLAB_URI, function (error) {
 
 let COMMANDS = {
   map: { description: 'return static image', usage: ['bot map [location]'] },
-  news: { description: 'return 3 news', usage: ['bot news [news type]'] },
+  news: { description: 'return 3 news', usage: ['bot news [options]',
+  'options: y(社会), w(国際), b(ビジネス), p(政治), e(エンタメ), s(スポーツ), t(テクノロジー), po(話題)'] },
   ping: { description: 'return pong', usage: ['bot ping'] },
   set: { description: 'set botname or set your color', usage: ['bot set botname=[botname]', 'bot set color=[#rgb]'] },
   status: { description: 'show bot status', usage: ['bot status'] },
@@ -140,12 +141,11 @@ module.exports.youtube = function(data, fn) {
 module.exports.news = function(data, fn) {
   // ir=ピックアップ, y=社会, w=国際, b=ビジネス, p=政治, e=エンタメ, s=スポーツ, t=テクノロジー, po=話題
   var topic
-  if(['ir', 'y', 'w', 'b', 'p', 'e', 's', 't', 'po'].indexOf(data) >= 0) {
+  if(['y', 'w', 'b', 'p', 'e', 's', 't', 'po'].indexOf(data) >= 0) {
     topic = data
   } else {
     topic = 'po'
   }
-  console.log(2)
   const url = 'https://news.google.com/news?hl=ja&ned=us&ie=UTF-8&oe=UTF-8&output=rss&num=3&topic=' + topic
 
   request(url, function(err, response, body) {
@@ -154,12 +154,16 @@ module.exports.news = function(data, fn) {
       const news = json.rss.channel.item
       console.log(news)
 
-      var message = ''
-      for(var i=0; i<news.length; i++) {
-        message += '<a href="' + news[i].link + '" target="_blank">' + news[i].title + '</a><br>'
-        message += news[i].description + '<br>'
+      if(news.length > 0) {
+        var message = ''
+        for(var i=0; i<news.length; i++) {
+          message += '<a href="' + news[i].link + '" target="_blank">' + news[i].title + '</a><br>'
+          message += news[i].description + '<br>'
+        }
+        fn(message)
+      } else {
+        fn('<p>Newsが取得できませんでした。</p>')
       }
-      fn(message)
     } else {
       fn('<p>Newsが取得できませんでした。</p>')
     }
