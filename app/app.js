@@ -179,7 +179,10 @@ function botReply(command, emit) {
   console.log('com is ' + com)
   console.log('data is ' + data)
 
-  if(com == 'ping') emit( ['me', { data: 'pong' }] )
+  if(com == 'ping') {
+    emit( ['me', { data: 'bot ping' }] )
+    emit( ['me', { data: 'pong' }] )
+  }
 
   else if(com == 'help') {
     API.botHelp(data, function(message) {
@@ -188,8 +191,8 @@ function botReply(command, emit) {
   }
 
   else if(com == 'todo') {
-    API.todo(data, command[3], command.slice(4), function(message) {
-      emit( ['me', { data: message }, 'bot style reply'] )
+    API.todo(data, command[3], command.slice(4), function(message, rep) {
+      emit( ['me', { data: rep, message: message }, 'bot todo reply'] )
     })
   }
 

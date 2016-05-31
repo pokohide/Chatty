@@ -329,6 +329,16 @@ $(function() {
     botMessage($msgDiv)
   })
 
+  // todo専用
+  socket.on('bot todo reply', function(data) {
+    const message = data.message
+    const $handleDiv = $('<dt class="timeline__item--handle" />').text(data.botName)
+    const $msgBodyDiv = $('<dd class="timeline__item--message" />').html(message)
+    const $msgDiv = $('<li class="timeline__list--item" />')
+      .append( $('<dl />').append($handleDiv, $msgBodyDiv) )
+    botMessage($msgDiv)    
+  })
+
   // タイマーの設置
   socket.on('bot timer', function(data) {
     const message = data.data

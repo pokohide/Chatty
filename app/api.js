@@ -58,7 +58,7 @@ module.exports.todo = function(command, name, body, fn) {
     Todo.remove({}, function(err) {
       if(err) fn('<p>Todoを消去できませんでした。</p>')
     })
-    fn('<p>Todoリストを全て消去しました。</p>')
+    fn('<p>Todoリストを全て消去しました。</p>', 'todo added')
   }
 
 
@@ -67,7 +67,7 @@ module.exports.todo = function(command, name, body, fn) {
   	Todo.remove({ name: name }, function(err) {
   	  if(err) fn('<p>Todoを消去できませんでした。</p>')
   	})
-    fn('<p>Todoリストの  Todo名: <b>' + name + '</b> を消去しました。</p>')
+    fn('<p>Todoリストの  Todo名: <b>' + name + '</b> を消去しました。</p>', 'todo deleted')
   }
 
 
@@ -75,13 +75,15 @@ module.exports.todo = function(command, name, body, fn) {
   	Todo.find({}, function(err, docs) {
   	  if(!err) {
         if(docs.length == 0) {
-          fn('<p>Todoリストは空です。</p>')
+          fn('<p>Todoリストは空です。</p>', 'todo empty')
         } else {
           var message = '現在のTodoリスト一覧です。 [Todo名]:  [Todo内容]'
+          var rep = ''
           for(var i=0; i < docs.length; i++) {
             message += marked('* <b>' + docs[i].name + '</b>:  <b>' + docs[i].body + '</b>')
+            rep += 'todo' + i + ' ' + docs[i].name + ' ' + docs[i].body + '\n'
           }
-          fn(marked(message))
+          fn(marked(message), rep)
         }
   	  } else {
   	  	fn('<p>Todoリストを参照できません。</p>')
