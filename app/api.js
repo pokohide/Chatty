@@ -30,6 +30,7 @@ mongoose.connect(process.env.MONGOLAB_URI, function (error) {
 });
 
 let COMMANDS = {
+  dice: { description: 'return random int between 1 to [max(default 6)]', usage: ['bot dice [max]'] },
   map: { description: 'return static image', usage: ['bot map [location]'] },
   news: { description: 'return 3 news', usage: ['bot news [options]',
   'options: y(社会), w(国際), b(ビジネス), p(政治), e(エンタメ), s(スポーツ), t(テクノロジー), po(話題)'] },
