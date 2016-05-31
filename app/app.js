@@ -5,7 +5,6 @@ const _ = require('koa-route');
 const co = require('co');
 const views = require('co-views');
 const serve = require('koa-static');
-const moment = require('moment');
 const fs = require('fs');
 const app = koa();
 

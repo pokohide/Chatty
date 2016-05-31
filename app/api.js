@@ -186,7 +186,7 @@ module.exports.status = function(name, bot, fn) {
 }
 
 module.exports.dice = function(data, fn) {
-  const max = data || 6
+  const max = Number(data) || 6
   const message = 'サイコロを振った結果は' + (Math.floor( Math.random() * max)+1) + 'です。'
   fn(message)
 }
