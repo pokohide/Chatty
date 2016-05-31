@@ -19,6 +19,17 @@ var botName = 'Chatty'
 var connection
 var chatbot = {}
 
+// Chatbot初期化
+API.initMarkov(function(bot) {
+  chatbot = bot
+})
+
+
+// 300秒ごとにバックアップ
+setInterval(function() {
+  API.saveMarkov(chatbot)
+}, 10000)
+ 
 // 静的ページ
 app.use(serve(__dirname + '/'));
 app.use(function*() {

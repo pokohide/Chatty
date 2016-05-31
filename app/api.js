@@ -17,8 +17,8 @@ const Todo = mongoose.model('Todo', TodoSchema)
 
 
 const MarkovScheme = new mongoose.Schema({
-  start: String,
-  next: [String]
+  name: String,
+  vocabulary: String
 })
 const Markov = mongoose.model('Markov', MarkovScheme)
 
@@ -207,6 +207,34 @@ module.exports.analysis = function(data, fn) {
   })
 }
 
+module.exports.initMarkov = function(fn) {
+  Markov.findOne({ name: 'chatbot' }, function(err, obj) {
+    if(!err) {
+      if(obj) {
+        fn( JSON.parse(obj.vocabulary) )
+      } else {
+        fn( {} )
+      }
+    } else {
+      fn( {} )
+    }
+  })
+}
+
+
+module.exports.saveMarkov = function(bot) {
+  Markov.findOne({ bane: 'chatbot' }, function(err, obj) {
+    if(obj) {
+      obj.vocabulary = JSON.stringify(bot)
+      obj.save()
+    } else {
+      var chatbot = new Markov({ name: 'chatbot', vocabulary: JSON.stringify(bot) })
+      chatbot.save(function(err) {
+        console.log(err)
+      })
+    }
+  })
+}
 
 
 
