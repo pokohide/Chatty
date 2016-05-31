@@ -351,12 +351,4 @@ $(function() {
       }
     })
   })
-
-  // サーバーからの問いかけ。
-  socket.on('connected?', function(data) {
-    if(data) {
-      socket.emit('yeah', { state: data.state, handle: handle })
-    }
-  })
-
 });
