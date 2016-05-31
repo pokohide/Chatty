@@ -130,7 +130,7 @@ $(function() {
 
   // ユーザのメッセージを表示
   function addChatMessage(data, options) {
-    const message = marked( data.message.replace(/[\n\r]/g, '<br />') )
+    const message = marked( e(data.message.replace(/[\n\r]/g, '<br />')) )
     const $handleDiv = $('<dt class="timeline__item--handle" />').text(data.handle).css('color', data.handleColor)
     const $msgBodyDiv = $('<dd class="timeline__item--message" />').html(message)
 
@@ -140,6 +140,15 @@ $(function() {
     addMessageToTimeline($msgDiv, options)
   }
 
+  // エスケープ
+  function e(str) {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');  
+  }
 
   // flashメッセージ追加
   function flashMessage(message, type) {
