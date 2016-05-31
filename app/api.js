@@ -30,14 +30,15 @@ mongoose.connect(process.env.MONGOLAB_URI, function (error) {
 });
 
 let COMMANDS = {
-  ping: { description: 'return pong', usage: ['bot ping'] },
   map: { description: 'return static image', usage: ['bot map [location]'] },
-  timer: { description: 'embed timer on this board', usage: ['bot timer [second]'] },
-  youtube: { description: 'embed youtube on this board', usage: ['bot youtube [link]'] },
+  news: { description: 'return 3 news', usage: ['bot news [news type]'] },
+  ping: { description: 'return pong', usage: ['bot ping'] },
   set: { description: 'set botname or set your color', usage: ['bot set botname=[botname]', 'bot set color=[#rgb]'] },
-  todo: { description: 'you can use todo list', usage: ['bot todo add [todo名] [todo内容]', 'bot todo delete [todo名]', 'bot todo list'] },
   status: { description: 'show bot status', usage: ['bot status'] },
-  talk: { description: 'you can talk with bot', usage: ['bot talk [トーク内容]'] }
+  talk: { description: 'you can talk with bot', usage: ['bot talk [トーク内容]'] },
+  timer: { description: 'embed timer on this board', usage: ['bot timer [second]'] },
+  todo: { description: 'you can use todo list', usage: ['bot todo add [todo名] [todo内容]', 'bot todo delete [todo名]', 'bot todo list'] },
+  youtube: { description: 'embed youtube on this board', usage: ['bot youtube [link]'] }
 }
 
 module.exports.todo = function(command, name, body, fn) {
