@@ -1,5 +1,6 @@
 const co = require('co')
 const http = require('http')
+const request = require('request')
 const querystring = require('querystring')
 const parser = require('libxml-to-js')
 const xml2json = require('xml2json')
@@ -136,22 +137,32 @@ module.exports.youtube = function(data, fn) {
 }
 
 module.exports.news = function(data, fn) {
-  const newsUrl = 'http://news.google.com/news?hl=ja&ned=us&ie=UTF-8&oe=UTF-8&output=rss&topic=po'
-  const url = 'https://ajax.googleapis.com/ajax/services/feed/load?v=1.0&q=' + newsUrl + '&num=5'
-  console.log(url)
-  http.get(url, (res) => {
-  	let body = ''
-  	res.setEncoding('utf8')
-  	res.on('data', (chunk) => {
-  	  body += chunk
-  	})
-  	res.on('end', (res) => {
-  	  return JSON.parse(body)
-  	})
-  }).on('error', (e) => {
-  	return e.message
+  // ir=ピックアップ, y=社会, w=国際, b=ビジネス, p=政治, e=エンタメ, s=スポーツ, t=テクノロジー, po=話題
+  var topic
+  if(['ir', 'y', 'w', 'b', 'p', 'e', 's', 't', 'po'].indexOf(data) >= 0) {
+    topic = data
+  } else {
+    topic = 'po'
+  }
+  console.log(2)
+  const url = 'https://news.google.com/news?hl=ja&ned=us&ie=UTF-8&oe=UTF-8&output=rss&num=3&topic=' + topic
+
+  request(url, function(err, response, body) {
+    if(!err && response.statusCode == 200) {
+      const json = JSON.parse( xml2json.toJson(body) )
+      const news = json.rss.channel.item
+      console.log(news)
+
+      var message = ''
+      for(var i=0; i<news.length; i++) {
+        message += '<a href="' + news[i].link + '" target="_blank">' + news[i].title + '</a><br>'
+        message += news[i].description + '<br>'
+      }
+      fn(message)
+    } else {
+      fn('<p>Newsが取得できませんでした。</p>')
+    }
   })
-  fn('ok')
 }
 
 module.exports.status = function(name, bot, fn) {

@@ -28,7 +28,7 @@ API.initMarkov(function(bot) {
 // 300秒ごとにバックアップ
 setInterval(function() {
   API.saveMarkov(chatbot)
-}, 10000)
+}, 300000)
  
 // 静的ページ
 app.use(serve(__dirname + '/'));
@@ -248,13 +248,14 @@ function botReply(command, emit) {
   }
 
   else if(com == 'news') {
+    console.log('ok')
     API.news(data, function(message) {
-      emit( ['all', { data: message }, 'bot simple reply'] )
+      emit( ['all', { data: message }, 'bot style reply'] )
     })
   }
 
   else if(com == 'status') {
-    const message = API.status(botName, chatbot, function(message) {
+    API.status(botName, chatbot, function(message) {
       emit( ['me', {data: message }, 'bot simple reply'] )
     })
   }
