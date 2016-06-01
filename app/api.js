@@ -23,11 +23,13 @@ const MarkovScheme = new mongoose.Schema({
 })
 const Markov = mongoose.model('Markov', MarkovScheme)
 
+const mongoURI = process.env.MONGOLAB_URI || 'mongodb://localhost/chatty'
 
-mongoose.connect(process.env.MONGOLAB_URI, function (error) {
-  if (error) console.error(error);
+mongoose.connect(mongoURI, function (error) {
+  if (error) console.error ('ERROR connecting to: ' + mongoURI + '. ' + err);
   else console.log('mongo connected');
 });
+
 
 let COMMANDS = {
   dice: { description: 'return random int between 1 to [max(default 6)]', usage: ['bot dice [max]'] },
