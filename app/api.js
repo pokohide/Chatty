@@ -23,7 +23,7 @@ const MarkovScheme = new mongoose.Schema({
 })
 const Markov = mongoose.model('Markov', MarkovScheme)
 
-const mongoURI = process.env.MONGOLAB_URI || 'mongodb://localhost/chatty'
+const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost/chatty'
 
 mongoose.connect(mongoURI, function (error) {
   if (error) console.error ('ERROR connecting to: ' + mongoURI + '. ' + error);
