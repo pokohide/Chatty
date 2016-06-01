@@ -191,6 +191,7 @@ function botReply(command, emit) {
 
   else if(com == 'todo') {
     API.todo(data, command[3], command.slice(4), function(message, rep) {
+      rep = rep || ''
       emit( ['me', { data: rep, message: message }, 'bot todo reply'] )
     })
   }

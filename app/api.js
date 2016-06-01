@@ -45,29 +45,47 @@ let COMMANDS = {
 
 module.exports.todo = function(command, name, body, fn) {
   if(command == 'add') {
-    if(name.length==0 || body.length==0) fn('<p><code>bot todo add [todo名] [todo内容]</code> の形式で入力してください。</p>')
+    if(!name || name.length==0 || !body) {
+      fn('<p><code>bot todo add [todo名] [todo内容]</code> の形式で入力してください。</p>')
+      return
+    }
     var todo = new Todo({ name: name, body: body.join(' ') });
     todo.save(function(err) {
-   	  if(err) fn('<p>Todoを追加できませんでした。</p>')
+   	  if(err) {
+        fn('<p>Todoを追加できませんでした。</p>')
+        return
+      }
     })
     fn('<p>Todoリストに  Todo名: <b>' + name + '</b>, Todo内容: <b>' + body + '</b> を追加しました。</p>')
+    return
   }
 
 
   else if(command == 'delete' && name == 'all') {
     Todo.remove({}, function(err) {
-      if(err) fn('<p>Todoを消去できませんでした。</p>')
+      if(err) {
+        fn('<p>Todoを消去できませんでした。</p>')
+        return
+      }
     })
     fn('<p>Todoリストを全て消去しました。</p>', 'todo added')
+    return
   }
 
 
   else if(command == 'delete') {
-    if(name.length==0) fn('<p><code>bot todo delete [todo名]</code> の形式で入力してください。</p>')
+    if(!name || name.length==0) {
+      fn('<p><code>bot todo delete [todo名]</code> の形式で入力してください。</p>')
+      return 
+    }
   	Todo.remove({ name: name }, function(err) {
-  	  if(err) fn('<p>Todoを消去できませんでした。</p>')
+  	  if(err) {
+        fn('<p>Todoを消去できませんでした。</p>')
+        return
+      }
   	})
     fn('<p>Todoリストの  Todo名: <b>' + name + '</b> を消去しました。</p>', 'todo deleted')
+    return
   }
 
 
@@ -76,6 +94,7 @@ module.exports.todo = function(command, name, body, fn) {
   	  if(!err) {
         if(docs.length == 0) {
           fn('<p>Todoリストは空です。</p>', 'todo empty')
+          return
         } else {
           var message = '現在のTodoリスト一覧です。 [Todo名]:  [Todo内容]'
           var rep = ''
@@ -83,10 +102,12 @@ module.exports.todo = function(command, name, body, fn) {
             message += marked('* <b>' + docs[i].name + '</b>:  <b>' + docs[i].body + '</b>')
             rep += 'todo' + i + ' ' + docs[i].name + ' ' + docs[i].body + '\n'
           }
-          fn(marked(message), rep)
+          fn(message, rep)
+          return
         }
   	  } else {
   	  	fn('<p>Todoリストを参照できません。</p>')
+        return
   	  }
   	})
   }
