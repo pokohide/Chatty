@@ -47,17 +47,17 @@ module.exports.todo = function(command, name, body, fn) {
   if(command == 'add') {
     if(!name || !body) {
       fn('<p><code>bot todo add [todo名] [todo内容]</code> の形式で入力してください。</p>')
-      return
+    } else {
+      var todo = new Todo({ name: name, body: body.join(' ') });
+      todo.save(function(err) {
+   	    if(err) {
+          fn('<p>Todoを追加できませんでした。</p>')
+        } else {
+          fn('<p>Todoリストに  Todo名: <b>' + name + '</b>, Todo内容: <b>' + body + '</b> を追加しました。</p>', 'todo added')
+        }
+      })
     }
-    var todo = new Todo({ name: name, body: body.join(' ') });
-    todo.save(function(err) {
-   	  if(err) {
-        fn('<p>Todoを追加できませんでした。</p>')
-        return
-      }
-    })
-    fn('<p>Todoリストに  Todo名: <b>' + name + '</b>, Todo内容: <b>' + body + '</b> を追加しました。</p>')
-    return
+    //fn('<p>Todoリストに  Todo名: <b>' + name + '</b>, Todo内容: <b>' + body + '</b> を追加しました。</p>')
   }
 
 
@@ -66,26 +66,26 @@ module.exports.todo = function(command, name, body, fn) {
       if(err) {
         fn('<p>Todoを消去できませんでした。</p>')
         return
+      } else {
+        fn('<p>Todoリストを全て消去しました。</p>', 'todo deleted')
       }
     })
-    fn('<p>Todoリストを全て消去しました。</p>', 'todo added')
-    return
+    //fn('<p>Todoリストを全て消去しました。</p>', 'todo deleted')
   }
 
 
   else if(command == 'delete') {
     if(!name) {
       fn('<p><code>bot todo delete [todo名]</code> の形式で入力してください。</p>')
-      return 
     }
   	Todo.remove({ name: name }, function(err) {
   	  if(err) {
         fn('<p>Todoを消去できませんでした。</p>')
-        return
+      } else {
+        fn('<p>Todoリストの  Todo名: <b>' + name + '</b> を消去しました。</p>', 'todo deleted')
       }
   	})
-    fn('<p>Todoリストの  Todo名: <b>' + name + '</b> を消去しました。</p>', 'todo deleted')
-    return
+    //fn('<p>Todoリストの  Todo名: <b>' + name + '</b> を消去しました。</p>', 'todo deleted')
   }
 
 
@@ -94,7 +94,6 @@ module.exports.todo = function(command, name, body, fn) {
   	  if(!err) {
         if(docs.length == 0) {
           fn('<p>Todoリストは空です。</p>', 'todo empty')
-          return
         } else {
           var message = '現在のTodoリスト一覧です。 [Todo名]:  [Todo内容]'
           var rep = ''
@@ -103,11 +102,9 @@ module.exports.todo = function(command, name, body, fn) {
             rep += 'todo' + i + ' ' + docs[i].name + ' ' + docs[i].body + '\n'
           }
           fn(message, rep)
-          return
         }
   	  } else {
   	  	fn('<p>Todoリストを参照できません。</p>')
-        return
   	  }
   	})
   }
