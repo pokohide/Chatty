@@ -45,7 +45,7 @@ let COMMANDS = {
 
 module.exports.todo = function(command, name, body, fn) {
   if(command == 'add') {
-    if(!name || name.length==0 || !body) {
+    if(!name || !body) {
       fn('<p><code>bot todo add [todo名] [todo内容]</code> の形式で入力してください。</p>')
       return
     }
@@ -74,7 +74,7 @@ module.exports.todo = function(command, name, body, fn) {
 
 
   else if(command == 'delete') {
-    if(!name || name.length==0) {
+    if(!name) {
       fn('<p><code>bot todo delete [todo名]</code> の形式で入力してください。</p>')
       return 
     }
