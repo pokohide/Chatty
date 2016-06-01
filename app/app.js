@@ -122,7 +122,7 @@ app.io.route('room message', function (next, data) {
 // 全体にflash messageを通知
 app.io.route('flash message', function (next, data) {
   this.broadcast.emit('flash message', { data: data.message })
-  //this.emit('flash message', { data: data.message })
+  this.emit('flash message', { data: data.message })
 })
 
 // メッセージを解析
